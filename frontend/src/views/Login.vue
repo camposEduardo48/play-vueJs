@@ -1,0 +1,120 @@
+<template>
+  <Layout>
+    <Container>
+      <v-row>
+        <v-col md="12" sm="12" class="d-flex justify-center mt-10">
+          <v-card class="h-auto w-33" elevation="10">
+            <v-row>
+              <v-col class="d-flex justify-center">
+                <v-form class="d-flex flex-column h-auto w-100 ma-6 pa-2 ga-4" elevation="6" @submit.prevent="postUser">
+                  <h3>acess_zap_unity_utility_v1</h3>
+                  <v-divider></v-divider>
+                  <v-text-field
+                    v-model="user_nickname"
+                    label="Digite seu apelido"
+                    type="text"
+                    placeholder="Digite seu apelido"
+                    variant="outlined"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="user_email"
+                    label="Digite seu email"
+                    type="text"
+                    variant="outlined"
+                    placeholder="Digite seu email"
+                    required
+                  >
+                  </v-text-field>
+                    <small v-if='user_email.length > 4 && user_email.length < 20' color="red lighten-5">Quantidade de caracteres inválidos!</small>
+                  <v-row>
+                    <v-btn type="submit" class="mt-6 mb-12" block>Enviar</v-btn>
+                  </v-row>
+                </v-form>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+    </Container>
+  </Layout>
+</template>
+<script setup>
+import Container from '@/components/container/Container.vue'
+import Layout from '@/components/layout/Layout.vue'
+import axios from 'axios'
+import { onMounted, ref } from 'vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+const apiJson = 'http://localhost:3300'
+
+const user_nickname = ref('')
+const user_email = ref('')
+const submitted = ref(false)
+const show_users = ref([])
+
+const notify = () => {
+  toast('Dados enviados com sucesso!', {
+    autoClose: 2000,
+  }) // ToastOptions
+  return { notify }
+}
+const invalid = () => {
+  toast('Dados inválidos!', {
+    autoClose: 2000,
+  }) // ToastOptions
+  return { invalid }
+}
+const problem = () => {
+  toast('Ops, tivemos um problema!', {
+    autoClose: 2000,
+  }) // ToastOptions
+  return { problem }
+}
+
+const postUser = async () => {
+  const request = await axios.get(`${apiJson}/users`)
+  const reqAll = ref([])
+  reqAll.value = request.data
+  const searchData = reqAll.value
+  const user_datas = {
+    nickname: user_nickname.value.trim(),
+    email: user_email.value.trim(),
+    permissions: false,
+    createdAt: new Date(),
+  }
+  localStorage.getItem(user_datas)
+  const req_nick = searchData.find(item => user_datas.nickname === item.nickname || user_datas.nickname.length < 6)
+  const req_email = searchData.find(item => user_datas.email === item.email || user_datas.email.length < 10)
+
+  try {
+    if (!req_nick && !req_email) {
+      
+      const response = await axios.post(`${apiJson}/users`, user_datas)
+      notify()
+      return console.log('Novo usuário adicionado com sucesso!')
+    }
+    // if (req_nick && req_email) {
+    //     return window.location.href='/dashboard' // essa linha bugou os outros IF's
+    //   }
+    if (req_nick.length === 0 && req_nick.length < 6) {
+      return invalid()
+    }
+    if (req_email.length === 0 && req_email.length < 8) {
+      return invalid()
+    }
+    return invalid()
+  } catch (err) {
+    problem()
+    console.log(`Ops, tivemos um problema ao realizar a função! ${err}`)
+  }
+}
+
+onMounted(() => {})
+</script>
+
+<style>
+ul {
+  list-style: none;
+}
+</style>
