@@ -26,7 +26,9 @@
                     required
                   >
                   </v-text-field>
-                    <small v-if='user_email.length > 4 && user_email.length < 20' color="red lighten-5">Quantidade de caracteres inválidos!</small>
+                  <small v-if="user_email.length > 4 && user_email.length < 18" color="red lighten-5"
+                    >Quantidade de caracteres inválidos!</small
+                  >
                   <v-row>
                     <v-btn type="submit" class="mt-6 mb-12" block>Enviar</v-btn>
                   </v-row>
@@ -53,12 +55,20 @@ const user_email = ref('')
 const submitted = ref(false)
 const show_users = ref([])
 
-const notify = () => {
-  toast('Dados enviados com sucesso!', {
-    autoClose: 2000,
+// const notify = () => {
+//   toast('Dados enviados com sucesso!', {
+//     autoClose: 2000,
+//   }) // ToastOptions
+//   return { notify }
+// }
+
+const notifyAccess = () => {
+  toast('Dados encontrados com sucesso ✅', {
+    autoClose: 4000,
   }) // ToastOptions
-  return { notify }
+  return { notifyAccess }
 }
+
 const invalid = () => {
   toast('Dados inválidos!', {
     autoClose: 2000,
@@ -83,27 +93,41 @@ const postUser = async () => {
     permissions: false,
     createdAt: new Date(),
   }
-  localStorage.getItem(user_datas)
-  const req_nick = searchData.find(item => user_datas.nickname === item.nickname || user_datas.nickname.length < 6)
-  const req_email = searchData.find(item => user_datas.email === item.email || user_datas.email.length < 10)
+
+  // localStorage.getItem(user_datas)
+
+  const req_nick = searchData.find((item) => user_datas.nickname === item.nickname)
+  const req_email = searchData.find((item) => user_datas.email === item.email)
+
+  /** verificação para postage de novo usuário!
+   * const req_nick = searchData.find(item => user_datas.nickname === item.nickname || user_datas.nickname.length < 6)
+    const req_email = searchData.find(item => user_datas.email === item.email || user_datas.email.length < 10)
+   */
 
   try {
-    if (!req_nick && !req_email) {
+    if (req_nick && req_email) {
+      notifyAccess()
+      setTimeout(() => {
+        const redirectTo = () => {
+          return (window.location.href = '/dashboard')
+        }
+        redirectTo()
+      }, 3800)
+    }
+    /** postar novo usuario
+     * if (!req_nick && !req_email) {
       
       const response = await axios.post(`${apiJson}/users`, user_datas)
       notify()
       return console.log('Novo usuário adicionado com sucesso!')
     }
-    // if (req_nick && req_email) {
-    //     return window.location.href='/dashboard' // essa linha bugou os outros IF's
-    //   }
+     */
     if (req_nick.length === 0 && req_nick.length < 6) {
       return invalid()
     }
     if (req_email.length === 0 && req_email.length < 8) {
       return invalid()
     }
-    return invalid()
   } catch (err) {
     problem()
     console.log(`Ops, tivemos um problema ao realizar a função! ${err}`)
