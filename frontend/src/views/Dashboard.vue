@@ -51,8 +51,11 @@
               </v-col>
               <v-col class="d-flex flex-column ga-4">
                 <v-card elevation="20">
-                  <v-card-text>
-                    <h2>Panel</h2>
+                  <v-card-text class="d-flex align-center ga-4">
+                    <span>
+                      <h2>{{ `company_name` }}</h2>
+                    </span>
+                    <span class="status"></span>
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-row class="pa-4">
@@ -113,29 +116,57 @@
     <Footer></Footer>
   </Layout>
 </template>
-<script lang="ts" setup>
+<script setup>
   import Container from '@/components/container/Container.vue'
   import Footer from '@/components/footer/Footer.vue'
   import Header from '@/components/header/Header.vue'
   import Layout from '@/components/layout/Layout.vue'
   import axios from 'axios'
-  import { onMounted, ref } from 'vue'
+  import { io } from 'socket.io-client'
+  import { onMounted, onUnmounted, ref } from 'vue'
   import background from './../assets/bg-dashboard.svg'
+
   const img_background = background
   const apiJson = 'http://localhost:3300'
   const user_info = ref('')
   const user_nickname = ref('')
+  let socket
+
+  const connectSocket = () => {
+    socket = io('http://localhost:3000')
+    socket.on('connect', () => {
+      console.log(console.log('Conectado com SOCKET.IO'))
+    })
+    socket.on('disconnect', () => {
+      console.log('Desconectado')
+    })
+  }
+
+  const sendMessage = () => {
+    if (socket) {
+      socket.emit('message', 'Olá, servidor via SOCKET.IO!')
+    }
+  }
 
   const getUser = async () => {
+    if (socket) {
+      socket.emit('received', 'dados recebidos com sucesso! SOCKET.IO')
+    }
     const request = await axios.get(`${apiJson}/users`)
     user_info.value = request.data
     const datas = user_info.value
-    const nick = datas.map<string>((item) => item.nickname)
+    const nick = datas.map < string > ((item) => item.nickname)
     user_nickname.value = nick[0]
   }
 
   onMounted(() => {
+    connectSocket()
     getUser()
+  })
+  onUnmounted(() => {
+    if (socket) {
+      socket.disconnect()
+    }
   })
 </script>
 <style scoped>
@@ -148,5 +179,11 @@
     display: flex;
     justify-content: end;
     align-items: center;
+  }
+  span.status {
+    height: 12px;
+    width: 12px;
+    border-radius: 100%;
+    background: silver;
   }
 </style>

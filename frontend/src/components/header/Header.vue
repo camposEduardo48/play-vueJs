@@ -3,7 +3,9 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-card>PHOTO</v-card>
+          <v-card>
+            <PhBowlingBall :size="32" color="#874B91" />
+          </v-card>
         </v-card>
       </v-col>
       <v-col>
@@ -14,7 +16,9 @@
     </v-row>
   </header>
 </template>
-<script setup></script>
+<script setup>
+  import { PhBowlingBall } from '@phosphor-icons/vue'
+</script>
 <style>
   header {
     z-index: 1;
