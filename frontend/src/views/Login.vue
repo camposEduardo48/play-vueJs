@@ -1,13 +1,19 @@
 <template>
-  <Layout>
+  <Layout
+    :style="{
+      backgroundImage: `url(${img_background})`,
+      backgroundPosition: 'center',
+    }"
+  >
     <Container>
       <v-row>
         <v-col md="12" sm="12" class="d-flex justify-center mt-10">
-          <v-card class="h-auto w-33" elevation="10">
+          <v-card class="h-auto w-33" elevation="20">
             <v-row>
               <v-col class="d-flex justify-center">
                 <v-form class="d-flex flex-column h-auto w-100 ma-6 pa-2 ga-4" elevation="6" @submit.prevent="postUser">
                   <h3>acess_zap_unity_utility_v1</h3>
+                  <PhBiohazard :size="32" />
                   <v-divider></v-divider>
                   <v-text-field
                     v-model="user_nickname"
@@ -48,7 +54,9 @@ import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+import background from './../assets/bg-login.svg'
 const apiJson = 'http://localhost:3300'
+const img_background = background
 
 const user_nickname = ref('')
 const user_email = ref('')
@@ -63,20 +71,20 @@ const show_users = ref([])
 // }
 
 const notifyAccess = () => {
-  toast('Dados encontrados com sucesso ✅', {
+  toast.success('Acesso liberado', {
     autoClose: 4000,
   }) // ToastOptions
   return { notifyAccess }
 }
 
 const invalid = () => {
-  toast('Dados inválidos!', {
+  toast.error('Dados inválidos!', {
     autoClose: 2000,
   }) // ToastOptions
   return { invalid }
 }
 const problem = () => {
-  toast('Ops, tivemos um problema!', {
+  toast.error('Acessado negado', {
     autoClose: 2000,
   }) // ToastOptions
   return { problem }
@@ -112,7 +120,7 @@ const postUser = async () => {
           return (window.location.href = '/dashboard')
         }
         redirectTo()
-      }, 3800)
+      }, 2000)
     }
     /** postar novo usuario
      * if (!req_nick && !req_email) {
@@ -138,6 +146,16 @@ onMounted(() => {})
 </script>
 
 <style>
+.layout[data-v-c9bfb757] {
+  height: 100%;
+  background-size: contain;
+  background-position: 0%;
+}
+.v-btn.v-btn--density-default {
+  position: relative;
+  background: #d6a4de;
+}
+
 ul {
   list-style: none;
 }

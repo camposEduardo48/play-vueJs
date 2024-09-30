@@ -2,7 +2,6 @@
   <main class="layout">
     <slot></slot>
   </main>
-
 </template>
 
 <script setup></script>
@@ -19,6 +18,5 @@
   height: 100%;
   width: 100%;
   color: aqua;
-  background: silver;
 }
 </style>
