@@ -145,7 +145,7 @@ const postUser = async () => {
 onMounted(() => {})
 </script>
 
-<style>
+<style scoped>
 .layout[data-v-c9bfb757] {
   height: 100%;
   background-size: contain;
@@ -153,7 +153,6 @@ onMounted(() => {})
 }
 .v-btn.v-btn--density-default {
   position: relative;
-  background: #d6a4de;
 }
 
 ul {
