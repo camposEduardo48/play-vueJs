@@ -3,9 +3,7 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-card>
-            <PhBowlingBall :size="32" color="#874B91" />
-          </v-card>
+          <v-card> <PhBowlingBall :size="36" :style="{ background: '#874B91', color: '#fff', borderRadius: '100%' }" /> </v-card>
         </v-card>
       </v-col>
       <v-col>

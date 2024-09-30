@@ -1,2 +1,48 @@
-{ "users": [ { "id": "a4f0", "nickname": "campos_eduardo", "email": "oicedu48@gmail.com", "permissions": true, "createdAt":
-"2024-09-27T18:44:50.984Z" } ], "custumers": [ ], "companies": [] }
+{
+  "users": [
+    {
+      "id": "a4f0",
+      "nickname": "campos_eduardo",
+      "email": "oicedu48@gmail.com",
+      "permissions": true,
+      "createdAt": "2024-09-27T18:44:50.984Z"
+    }
+  ],
+  "custumers": [],
+  "companies": [],
+  "objects": [
+    {
+      "id": "c887"
+    },
+    {
+      "id": "cb4a",
+      "type": "virtual",
+      "name": "laser",
+      "detail": "laser longa distância"
+    },
+    {
+      "id": "40a0",
+      "type": "fisico",
+      "name": "vassoura",
+      "detail": "feita de madeira pura"
+    },
+    {
+      "id": "499a",
+      "type": "virtual",
+      "name": "bitcoin",
+      "detail": "moeda virtual valiosa"
+    },
+    {
+      "id": "9ad7",
+      "type": "virtual",
+      "name": "midia digital",
+      "detail": "jogos online"
+    },
+    {
+      "id": "530d",
+      "type": "fisico",
+      "name": "conteudo",
+      "detail": "em fotos reveladas"
+    }
+  ]
+}

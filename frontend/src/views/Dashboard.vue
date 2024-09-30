@@ -51,20 +51,58 @@
               </v-col>
               <v-col class="d-flex flex-column ga-4">
                 <v-card elevation="20">
-                  <v-card-text class="d-flex align-center ga-4">
+                  <v-card-text class="d-flex align-center ga-1">
                     <span>
                       <h2>{{ `company_name` }}</h2>
                     </span>
-                    <span class="status"></span>
+                    <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-row class="pa-4">
-                    <v-card-text>
-                      <h3>dashboard page</h3>
-                    </v-card-text>
                     <v-col class="d-flex ga-4">
-                      <v-btn text="Say Hello"></v-btn>
-                      <v-btn text="Go Out"></v-btn>
+                      <v-btn text="Say Hello" @click="() => sendMessage()"></v-btn>
+                      <v-dialog max-width="60%">
+                        <template v-slot:activator="{ props: activatorProps }">
+                          <v-btn text="Adicionar novo objeto" v-bind="activatorProps" @click="() => createNewObject()"></v-btn>
+                        </template>
+                        <template v-slot:default="{ isActive }">
+                          <v-row>
+                            <v-col>
+                              <v-card>
+                                <v-card-actions>
+                                  <v-spacer></v-spacer>
+                                  <v-btn variant="plain" text="Fechar" @click="isActive.value = false"></v-btn>
+                                </v-card-actions>
+                                <v-card-title> Adicionar novo objeto na tabela </v-card-title>
+                                <v-card-text>
+                                  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Praesentium, numquam at sunt illum
+                                  amet, quam, voluptates repellat maiores reiciendis illo iste quaerat dolor asperiores omnis
+                                  natus officiis eveniet ab quos?
+                                </v-card-text>
+                              </v-card>
+                              <v-sheet>
+                                <v-form @submit.prevent="() => addNewObject()" class="pa-6">
+                                  <v-select
+                                    v-model="type_object.value"
+                                    :items="type_object"
+                                    label="Selecione o tipo de objeto"
+                                    required
+                                  ></v-select>
+                                  <v-text-field v-model="name_object" label="Nome do objeto" required></v-text-field>
+                                  <v-text-field v-model="detail_object" label="Descrição do objeto" required></v-text-field>
+                                  <v-checkbox label="Desejar manter ativo no sistema?"></v-checkbox>
+                                  <v-card-actions>
+                                    <v-row class="d-flex justify-end">
+                                      <v-btn variant="plain" text="Cancelar" @click="isActive.value = false"></v-btn>
+                                      <v-btn variant="tonal" text="Confirmar" type="submit"></v-btn>
+                                    </v-row>
+                                  </v-card-actions>
+                                </v-form>
+                              </v-sheet>
+                            </v-col>
+                          </v-row>
+                        </template>
+                      </v-dialog>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -96,11 +134,11 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                          <tr v-for="object in object_info" :key="object.id">
+                            <td>{{ object.type }}</td>
+                            <td>{{ object.name }}</td>
+                            <td>{{ object.detail }}</td>
+                            <td>{{ object.name }}</td>
                           </tr>
                         </tbody>
                       </v-table>
@@ -126,14 +164,39 @@
   import { onMounted, onUnmounted, ref } from 'vue'
   import background from './../assets/bg-dashboard.svg'
 
+  const status_test = ref(true)
+
   const img_background = background
   const apiJson = 'http://localhost:3300'
   const user_info = ref('')
+  const object_info = ref([])
   const user_nickname = ref('')
+  const type_object = ref(['fisico', 'virtual'])
+  const name_object = ref('')
+  const detail_object = ref('')
+
   let socket
 
+  const addNewObject = async () => {
+    const modelObject = {
+      type: type_object.value.value,
+      name: name_object.value,
+      detail: detail_object.value,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    try {
+      const request = await axios.post(`${apiJson}/objects`, modelObject)
+      type_object.value = ''
+      name_object.value = ''
+      detail_object.value = ''
+    } catch (err) {
+      console.log(`algo deu errado: ${err}`)
+    }
+  }
+
   const connectSocket = () => {
-    socket = io('http://localhost:3000')
+    socket = io('http://localhost:3000/dashboard')
     socket.on('connect', () => {
       console.log(console.log('Conectado com SOCKET.IO'))
     })
@@ -146,22 +209,37 @@
     if (socket) {
       socket.emit('message', 'Olá, servidor via SOCKET.IO!')
     }
+    console.log('say hello')
   }
-
+  const getObject = async () => {
+    try {
+      const request = await axios.get(`${apiJson}/objects`)
+      object_info.value = request.data
+      const object_datas = object_info.value
+      return console.log(object_datas)
+    } catch (err) {
+      console.log(`algo deu errado: ${err}`)
+    }
+  }
   const getUser = async () => {
     if (socket) {
       socket.emit('received', 'dados recebidos com sucesso! SOCKET.IO')
     }
-    const request = await axios.get(`${apiJson}/users`)
-    user_info.value = request.data
-    const datas = user_info.value
-    const nick = datas.map < string > ((item) => item.nickname)
-    user_nickname.value = nick[0]
+    try {
+      const request = await axios.get(`${apiJson}/users`)
+      user_info.value = request.data
+      const datas = user_info.value
+      const nick = datas.map((item) => item.nickname)
+      user_nickname.value = nick[0]
+    } catch (err) {
+      console.log(`algo deu errado: ${erro}`)
+    }
   }
 
   onMounted(() => {
     connectSocket()
     getUser()
+    getObject()
   })
   onUnmounted(() => {
     if (socket) {
@@ -181,8 +259,8 @@
     align-items: center;
   }
   span.status {
-    height: 12px;
-    width: 12px;
+    height: 10px;
+    width: 10px;
     border-radius: 100%;
     background: silver;
   }
