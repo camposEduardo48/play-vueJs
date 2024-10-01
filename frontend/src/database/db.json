@@ -37,6 +37,15 @@
       "priority": false,
       "createdAt": "2024-10-01T16:38:44.661Z",
       "updatedAt": "2024-10-01T16:38:44.661Z"
+    },
+    {
+      "id": "abd3",
+      "type": "Hobby",
+      "name": "jogo da velha",
+      "detail": "achar um oponente para jogar",
+      "priority": false,
+      "createdAt": "2024-10-01T19:41:38.018Z",
+      "updatedAt": "2024-10-01T19:41:38.018Z"
     }
   ]
 }

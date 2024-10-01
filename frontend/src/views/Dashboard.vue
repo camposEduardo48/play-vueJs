@@ -20,8 +20,9 @@
               <v-col class="d-flex flex-column ga-4" md="3">
                 <v-card class="d-flex" elevation="20">
                   <v-card class="w-100">
-                    <v-card-text>
-                      <h3>Available</h3>
+                    <v-card-text class="d-flex align-center justify-space-between">
+                      <h3>Finalizado</h3>
+                      <PhTrophy :size="32" />
                     </v-card-text>
                     <v-card-text class="d-flex justify-center align-center">
                       <h2>{{ 99 }}</h2>
@@ -30,8 +31,9 @@
                 </v-card>
                 <v-card class="d-flex" elevation="20">
                   <v-card class="w-100">
-                    <v-card-text>
-                      <h3>Unavailable</h3>
+                    <v-card-text class="d-flex align-center justify-space-between">
+                      <h3>Em andamento</h3>
+                      <PhPersonSimpleRun :size="32" />
                     </v-card-text>
                     <v-card-text class="d-flex justify-center align-center">
                       <h2>{{ 99 }}</h2>
@@ -40,8 +42,9 @@
                 </v-card>
                 <v-card elevation="20">
                   <v-card class="w-100">
-                    <v-card-text>
-                      <h3>Disconnected</h3>
+                    <v-card-text class="d-flex align-center justify-space-between">
+                      <h3>Congelado</h3>
+                      <PhPauseCircle :size="32" />
                     </v-card-text>
                     <v-card-text class="d-flex justify-center align-center">
                       <h2>{{ 99 }}</h2>
@@ -51,19 +54,29 @@
               </v-col>
               <v-col class="d-flex flex-column ga-4">
                 <v-card elevation="10">
-                  <v-card-text class="d-flex align-center ga-1">
+                  <v-card-text class="d-flex align-center ga-2">
                     <span>
-                      <h2>{{ `company_name` }}</h2>
+                      <h2>{{ `nickname_user` }}</h2>
                     </span>
                     <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-row class="pa-4">
                     <v-col class="d-flex ga-4">
-                      <v-btn text="Say Hello" @click="() => sendMessage()"></v-btn>
+                      <v-btn
+                        :style="{ background: '#874b91', color: '#fff' }"
+                        text="Say Hello"
+                        @click="() => sendMessage()"
+                      ></v-btn>
                       <v-dialog max-width="500px">
                         <template v-slot:activator="{ props: activatorProps }">
-                          <v-btn text="Adicionar novo objeto" v-bind="activatorProps" @click="() => createNewObject()"></v-btn>
+                          <v-btn
+                            :style="{ background: '#874b91', color: '#fff' }"
+                            text="Adicionar nova tarefa"
+                            v-bind="activatorProps"
+                            @click="() => createNewObject()"
+                          >
+                          </v-btn>
                         </template>
                         <template v-slot:default="{ isActive }">
                           <v-row>
@@ -73,7 +86,7 @@
                                   <v-spacer></v-spacer>
                                   <v-btn variant="plain" text="Fechar" @click="isActive.value = false"></v-btn>
                                 </v-card-actions>
-                                <v-card-title> Adicionar novo objeto na tabela </v-card-title>
+                                <v-card-title> Adicionar nova tarefa </v-card-title>
                                 <v-card-text>
                                   Lorem ipsum dolor, sit amet consectetur adipisicing elit. Praesentium, numquam at sunt illum
                                   amet, quam, voluptates repellat maiores reiciendis illo iste quaerat dolor asperiores omnis
@@ -100,7 +113,12 @@
                                   <v-card-actions>
                                     <v-row class="d-flex justify-end">
                                       <v-btn variant="plain" text="Cancelar" @click="isActive.value = false"></v-btn>
-                                      <v-btn variant="tonal" text="Confirmar" type="submit"></v-btn>
+                                      <v-btn
+                                        :style="{ background: '#874b91', color: '#fff' }"
+                                        variant="tonal"
+                                        text="Confirmar"
+                                        type="submit"
+                                      ></v-btn>
                                     </v-row>
                                   </v-card-actions>
                                 </v-form>
@@ -115,23 +133,25 @@
                 <v-row class="d-flex justify-space-between ma-0">
                   <v-col class="d-flex flex-column">
                     <ul v-for="object in object_info" :key="object.id" class="pa-4">
-                      <li>
+                      <li class="d-flex justify-space-between">
                         <b>{{ object.type }}</b>
+                        <div :style="{ cursor: 'pointer' }">
+                          <p class="emoji">
+                            {{ object.priority === true ? '⭐' : null }}
+                          </p>
+                        </div>
                       </li>
                       <v-divider></v-divider>
                       <li>{{ object.name }}</li>
                       <li>{{ object.detail }}</li>
-                      <li>
-                        <b>{{ object.priority === true ? 'Importante' : null }}</b>
-                      </li>
                       <li class="d-flex justify-space-between">
-                        <v-btn>
-                          <PhPencilLine :size="24" />
-                        </v-btn>
-                        <v-btn>
+                        <v-btn @click="() => removeTask(object.id)">
                           <PhTrash :size="24" />
                         </v-btn>
-                        <v-btn>
+                        <v-btn @click="() => editTask(object.id)">
+                          <PhPencilLine :size="24" />
+                        </v-btn>
+                        <v-btn @click="() => nextStepTask(object.id)">
                           <PhArrowSquareRight :size="24" />
                         </v-btn>
                       </li>
@@ -162,11 +182,10 @@
   </Layout>
 </template>
 <script setup>
-import Container from '@/components/container/Container.vue'
 import Footer from '@/components/footer/Footer.vue'
 import Header from '@/components/header/Header.vue'
 import Layout from '@/components/layout/Layout.vue'
-import { PhArrowSquareRight, PhPencilLine, PhTrash } from '@phosphor-icons/vue'
+import { PhArrowSquareRight, PhPauseCircle, PhPencilLine, PhPersonSimpleRun, PhTrash, PhTrophy } from '@phosphor-icons/vue'
 import axios from 'axios'
 import { io } from 'socket.io-client'
 import { onMounted, onUnmounted, ref } from 'vue'
@@ -179,7 +198,7 @@ const apiJson = 'http://localhost:3300'
 const user_info = ref('')
 const object_info = ref([])
 const user_nickname = ref('')
-const type_object = ref(['Lazer', 'Trabalho', 'Hobby'])
+const type_object = ref(['ZapYou', 'ZapYou 2.0', 'Sisconep'])
 const color = ref(['Azul', 'Vermelho', 'Verde', 'Amarelo'])
 const name_object = ref('')
 const detail_object = ref('')
@@ -187,6 +206,44 @@ const color_task = ''
 const priority = ref(false)
 
 let socket
+
+const handleBoolean = () => {
+  priority.value === false
+  console.log(priority.value)
+}
+
+const removeTask = async (id) => {
+  try {
+    const request = await axios.delete(`${apiJson}/list/${id}`)
+    return console.log(`Status: ${request.status}`)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const nextStepTask = async (id) => {
+  try {
+    const request = await axios.patch(`${apiJson}/list/${id}`, {
+      // alterar o status da task e mover parar a próxima coluna
+    })
+    console.log(`Next step column => ${id}`)
+    return //response
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const editTask = async (id) => {
+  try {
+    const request = await axios.patch(`${apiJson}/list/${id}`, {
+      // alterar o status da task e mover parar a próxima coluna
+    })
+    console.log(`Edit the task => ${id}`)
+    return //response
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 const newItem = () => {
   toast.success('Adicionado com sucesso', {
@@ -247,7 +304,6 @@ const getObject = async () => {
     const request = await axios.get(`${apiJson}/list`)
     object_info.value = request.data
     const object_datas = object_info.value
-    return console.log(object_datas)
   } catch (err) {
     console.log(`algo deu errado: ${err}`)
   }
@@ -302,6 +358,12 @@ span.status {
 .v-col {
   color: #000;
 }
+.emoji {
+  position: relative;
+  top: 0px;
+  right: 0px;
+  font-size: 15pt;
+}
 ul {
   display: flex;
   flex-direction: column;
@@ -313,6 +375,9 @@ ul {
   box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.5);
   margin: 10px 0px 10px 0px;
   border-radius: 6px;
+}
+h2 {
+  font-size: 19pt;
 }
 svg {
   color: #874b91;
