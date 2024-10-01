@@ -1,3 +1,0 @@
-{ "useTabs": false, "arrowParens": "always", "bracketSpacing": true, "printWidth": 130, "singleQuote": true,
-"vueIndentScriptAndStyle": true, "htmlWhitespaceSensitivity": "css", "embeddedLanguageFormatting": "auto", "semi": false,
-"parser": "vue" }
