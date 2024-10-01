@@ -61,7 +61,7 @@
                   <v-row class="pa-4">
                     <v-col class="d-flex ga-4">
                       <v-btn text="Say Hello" @click="() => sendMessage()"></v-btn>
-                      <v-dialog max-width="60%">
+                      <v-dialog max-width="800px">
                         <template v-slot:activator="{ props: activatorProps }">
                           <v-btn text="Adicionar novo objeto" v-bind="activatorProps" @click="() => createNewObject()"></v-btn>
                         </template>
@@ -108,23 +108,12 @@
                 </v-card>
                 <v-row>
                   <v-col>
-                    <v-card elevation="20">
-                      <v-card-text>
-                        <h3>Statistics</h3>
+                    <v-card class="overflow-y-auto custom-scrollbar absolute" elevation="20" max-height="500px">
+                      <v-card-text class="custom-z-index w-full">
+                        <h3 block>Products</h3>
                       </v-card-text>
                       <v-divider> </v-divider>
-                      <v-card-text>loading...</v-card-text>
-                      <v-card-text>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora quod maxime saepe ut unde voluptatem
-                        culpa adipisci nulla ullam illo recusandae maiores nesciunt consectetur quia delectus vel aspernatur,
-                        distinctio possimus!
-                      </v-card-text>
-                      <v-card-text>
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Excepturi, sequi minus in eveniet, ea libero
-                        illo similique eaque explicabo atque suscipit distinctio. Ea, aliquam explicabo blanditiis sunt odit
-                        officia distinctio!
-                      </v-card-text>
-                      <v-table>
+                      <v-table class="mt-14 w-full">
                         <thead>
                           <tr>
                             <th>service</th>
@@ -162,6 +151,7 @@
   import axios from 'axios'
   import { io } from 'socket.io-client'
   import { onMounted, onUnmounted, ref } from 'vue'
+  import { toast } from 'vue3-toastify'
   import background from './../assets/bg-dashboard.svg'
 
   const status_test = ref(true)
@@ -177,19 +167,37 @@
 
   let socket
 
+  const newItem = () => {
+    toast.success('Adicionado com sucesso', {
+      autoClose: 2500,
+    }) // ToastOptions
+    return { newItem }
+  }
+  const invalid = () => {
+    toast.error('Informação inválida', {
+      autoClose: 2000,
+    }) // ToastOptions
+    return { invalid }
+  }
+
   const addNewObject = async () => {
-    const modelObject = {
-      type: type_object.value.value,
-      name: name_object.value,
-      detail: detail_object.value,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
     try {
-      const request = await axios.post(`${apiJson}/objects`, modelObject)
+      const modelObject = {
+        type: type_object.value.value,
+        name: name_object.value,
+        detail: detail_object.value,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
       type_object.value = ''
       name_object.value = ''
       detail_object.value = ''
+      if (name_object.value.length > 3 && detail_object.value.length > 5) {
+        newItem()
+        const request = await axios.post(`${apiJson}/objects`, modelObject)
+        return request
+      }
+      invalid()
     } catch (err) {
       console.log(`algo deu errado: ${err}`)
     }
@@ -207,7 +215,7 @@
 
   const sendMessage = () => {
     if (socket) {
-      socket.emit('message', 'Olá, servidor via SOCKET.IO!')
+      socket.emit('message', 'Olá, servidor via SOCKET.IO!') //verificar SOCKETS
     }
     console.log('say hello')
   }
@@ -263,5 +271,29 @@
     width: 10px;
     border-radius: 100%;
     background: silver;
+  }
+  .custom-z-index {
+    position: fixed;
+    word-wrap: break-word;
+    z-index: 1;
+    background: #fff;
+    box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.5);
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px; /* Largura da barra de rolagem */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Cor de fundo da trilha da barra de rolagem */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #ba68c8; /* Cor da barra de rolagem */
+    border-radius: 10px; /* Arredondamento dos cantos */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    cursor: pointer;
+    background-color: #874b91; /* Cor ao passar o mouse */
   }
 </style>
