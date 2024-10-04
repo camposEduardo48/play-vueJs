@@ -44,7 +44,7 @@
                   <v-card class="w-100">
                     <v-card-text class="d-flex align-center justify-space-between">
                       <h3>Congelado</h3>
-                      <PhPauseCircle :size="32" />
+                      <PhPause :size="32" />
                     </v-card-text>
                     <v-card-text class="d-flex justify-center align-center">
                       <h2>{{ 99 }}</h2>
@@ -56,18 +56,16 @@
                 <v-card elevation="10">
                   <v-card-text class="d-flex align-center ga-2">
                     <span>
-                      <h2>{{ `nickname_user` }}</h2>
+                      <h2 class="">{{ user_nickname }}</h2>
+                      <!-- mostrar o nome do usuario logado e autenticado -->
                     </span>
                     <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
+                    <small>{{ 'Aplicar websockets' }}</small>
+                    <small>{{ 'Aplicar JWT no login' }}</small>
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-row class="pa-4">
                     <v-col class="d-flex ga-4">
-                      <v-btn
-                        :style="{ background: '#874b91', color: '#fff' }"
-                        text="Say Hello"
-                        @click="() => sendMessage()"
-                      ></v-btn>
                       <v-dialog max-width="500px">
                         <template v-slot:activator="{ props: activatorProps }">
                           <v-btn
@@ -88,9 +86,8 @@
                                 </v-card-actions>
                                 <v-card-title> Adicionar nova tarefa </v-card-title>
                                 <v-card-text>
-                                  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Praesentium, numquam at sunt illum
-                                  amet, quam, voluptates repellat maiores reiciendis illo iste quaerat dolor asperiores omnis
-                                  natus officiis eveniet ab quos?
+                                  Dentro de cada tarefa, poderemos adicionar steps, que serão checkbox tickadas ao longo da
+                                  jornada de desenvolvimento.
                                 </v-card-text>
                               </v-card>
                               <v-card>
@@ -110,6 +107,10 @@
                                   <v-text-field v-model="name_object" label="Titulo da tarefa" required></v-text-field>
                                   <v-text-field v-model="detail_object" label="Descreva a tarefa" required></v-text-field>
                                   <v-checkbox v-model="priority" label="Prioridade para concluir essa tarefa?"></v-checkbox>
+                                  <v-select v-model="step.value" :items="step" label="Quantidade de steps"></v-select>
+                                  <small>Não é obrigatório selecionar á quantidade de steps.</small>
+                                  a quantidade de steps criara de forma automatica a cai de steps, após a aexecução da função
+                                  passar throw new error
                                   <v-card-actions>
                                     <v-row class="d-flex justify-end">
                                       <v-btn variant="plain" text="Cancelar" @click="isActive.value = false"></v-btn>
@@ -185,16 +186,18 @@
 import Footer from '@/components/footer/Footer.vue'
 import Header from '@/components/header/Header.vue'
 import Layout from '@/components/layout/Layout.vue'
-import { PhArrowSquareRight, PhPauseCircle, PhPencilLine, PhPersonSimpleRun, PhTrash, PhTrophy } from '@phosphor-icons/vue'
+import { PhArrowSquareRight, PhPause, PhPencilLine, PhPersonSimpleRun, PhTrash, PhTrophy } from '@phosphor-icons/vue'
 import axios from 'axios'
 import { io } from 'socket.io-client'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import background from './../assets/bg-dashboard.svg'
 
-const status_test = ref(true)
 const img_background = background
-const apiJson = 'http://localhost:3300'
+const apiJson = import.meta.env.VITE_DATABASE_URL
+
+const status_test = ref(true)
+const step = ref([1, 2, 3, 4, 5])
 const user_info = ref('')
 const object_info = ref([])
 const user_nickname = ref('')
@@ -212,38 +215,38 @@ const handleBoolean = () => {
   console.log(priority.value)
 }
 
-const removeTask = async (id) => {
-  try {
-    const request = await axios.delete(`${apiJson}/list/${id}`)
-    return console.log(`Status: ${request.status}`)
-  } catch (err) {
-    console.log(err)
-  }
-}
+// const removeTask = async (id) => {
+//   try {
+//     const request = await axios.delete(`${apiJson}/list/${id}`)
+//     return console.log(`Status: ${request.status}`)
+//   } catch (err) {
+//     console.log(err)
+//   }
+// }
 
-const nextStepTask = async (id) => {
-  try {
-    const request = await axios.patch(`${apiJson}/list/${id}`, {
-      // alterar o status da task e mover parar a próxima coluna
-    })
-    console.log(`Next step column => ${id}`)
-    return //response
-  } catch (err) {
-    console.log(err)
-  }
-}
+// const nextStepTask = async (id) => {
+//   try {
+//     const request = await axios.patch(`${apiJson}/list/${id}`, {
+//       // alterar o status da task e mover parar a próxima coluna
+//     })
+//     console.log(`Next step column => ${id}`)
+//     return //response
+//   } catch (err) {
+//     console.log(err)
+//   }
+// }
 
-const editTask = async (id) => {
-  try {
-    const request = await axios.patch(`${apiJson}/list/${id}`, {
-      // alterar o status da task e mover parar a próxima coluna
-    })
-    console.log(`Edit the task => ${id}`)
-    return //response
-  } catch (err) {
-    console.log(err)
-  }
-}
+// const editTask = async (id) => {
+//   try {
+//     const request = await axios.patch(`${apiJson}/list/${id}`, {
+//       // alterar o status da task e mover parar a próxima coluna
+//     })
+//     console.log(`Edit the task => ${id}`)
+//     return //response
+//   } catch (err) {
+//     console.log(err)
+//   }
+// }
 
 const newItem = () => {
   toast.success('Adicionado com sucesso', {
@@ -265,6 +268,7 @@ const addNewObject = async () => {
       name: name_object.value,
       detail: detail_object.value,
       priority: priority.value,
+      step: step.value.value,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -276,7 +280,7 @@ const addNewObject = async () => {
     //   newItem()
     //   return request
     // }
-    const request = await axios.post(`${apiJson}/list`, modelObject)
+    const request = await axios.post(`${apiJson}/tasks`, modelObject)
     newItem()
   } catch (err) {
     console.log(`algo deu errado: ${err}`)
@@ -299,9 +303,10 @@ const sendMessage = () => {
   }
   console.log('say hello')
 }
+
 const getObject = async () => {
   try {
-    const request = await axios.get(`${apiJson}/list`)
+    const request = await axios.get(`${apiJson}/tasks`)
     object_info.value = request.data
     const object_datas = object_info.value
   } catch (err) {

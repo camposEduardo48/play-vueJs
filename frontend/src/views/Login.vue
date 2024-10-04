@@ -11,7 +11,7 @@
           <v-card class="h-auto w-33" elevation="20">
             <v-row>
               <v-col class="d-flex justify-center">
-                <v-form class="d-flex flex-column h-auto w-100 ma-6 pa-2 ga-4" elevation="6" @submit.prevent="postUser">
+                <v-form class="d-flex flex-column h-auto w-100 ma-6 pa-2 ga-4" elevation="6" @submit.prevent="() => userLogin()">
                   <PhBiohazard :size="60" />
                   <v-text-field
                     v-model="user_nickname"
@@ -22,15 +22,15 @@
                     required
                   ></v-text-field>
                   <v-text-field
-                    v-model="user_email"
-                    label="Digite seu email"
-                    type="text"
+                    v-model="user_password"
+                    label="Digite sua senha"
+                    type="password"
                     variant="outlined"
-                    placeholder="Digite seu email"
+                    placeholder="Digite sua senha"
                     required
                   >
                   </v-text-field>
-                  <small v-if="user_email.length > 4 && user_email.length < 18" color="red lighten-5"
+                  <small v-if="user_password.length > 0 && user_password.length < 6" color="red lighten-5"
                     >Quantidade de caracteres inválidos!</small
                   >
                   <v-row>
@@ -56,31 +56,24 @@ import { onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import background from './../assets/bg-login.svg'
-const apiJson = 'http://localhost:3300'
+const apiJson = import.meta.env.VITE_DATABASE_URL
 const img_background = background
 
 const user_nickname = ref('')
-const user_email = ref('')
+const user_password = ref('')
 const submitted = ref(false)
 const show_users = ref([])
 
-// const notify = () => {
-//   toast('Dados enviados com sucesso!', {
-//     autoClose: 2000,
-//   }) // ToastOptions
-//   return { notify }
-// }
-
 const notifyAccess = () => {
-  toast.success('Acesso liberado', {
+  toast.success(`Bem vindo de volta, ${user_nickname.value}!`, {
     autoClose: 4000,
   }) // ToastOptions
   return { notifyAccess }
 }
 
 const invalid = () => {
-  toast.error('Dados inválidos!', {
-    autoClose: 2000,
+  toast.error('Usuário ou senha inválidos!', {
+    autoClose: 2200,
   }) // ToastOptions
   return { invalid }
 }
@@ -92,55 +85,22 @@ const problem = () => {
   return { problem }
 }
 
-const postUser = async () => {
-  const request = await axios.get(`${apiJson}/users`)
-  const reqAll = ref([])
-  reqAll.value = request.data
-  const searchData = reqAll.value
-  const user_datas = {
-    nickname: user_nickname.value.trim(),
-    email: user_email.value.trim(),
-    permissions: false,
-    createdAt: new Date(),
-  }
-
-  // localStorage.getItem(user_datas)
-
-  const req_nick = searchData.find((item) => user_datas.nickname === item.nickname)
-  const req_email = searchData.find((item) => user_datas.email === item.email)
-
-  /** verificação para postage de novo usuário!
-     * const req_nick = searchData.find(item => user_datas.nickname === item.nickname || user_datas.nickname.length < 6)
-      const req_email = searchData.find(item => user_datas.email === item.email || user_datas.email.length < 10)
-     */
-
+const userLogin = async () => {
   try {
-    if (req_nick && req_email) {
+    const response = await axios.post(`${apiJson}/users`, {
+      nickname: user_nickname.value,
+      password: user_password.value,
+    })
+    if (response) {
       notifyAccess()
       setTimeout(() => {
-        const redirectTo = () => {
-          return (window.location.href = '/dashboard')
-        }
-        redirectTo()
-      }, 2000)
-    }
-    /** postar novo usuario
-       * if (!req_nick && !req_email) {
-
-        const response = await axios.post(`${apiJson}/users`, user_datas)
-        notify()
-        return console.log('Novo usuário adicionado com sucesso!')
-      }
-       */
-    if (req_nick.length === 0 && req_nick.length < 6) {
-      return invalid()
-    }
-    if (req_email.length === 0 && req_email.length < 8) {
-      return invalid()
+        window.location.replace('/dashboard')
+      }, 3500)
+      return console.log(`Acesso liberado!`)
     }
   } catch (err) {
-    problem()
-    console.log(`Ops, tivemos um problema ao realizar a função! ${err}`)
+    console.log(`Usuário ou senha inválidos!`)
+    invalid()
   }
 }
 
