@@ -72,7 +72,7 @@
                             :style="{ background: '#874b91', color: '#fff' }"
                             text="Adicionar nova tarefa"
                             v-bind="activatorProps"
-                            @click="() => createNewObject()"
+                            @click="() => ''"
                           >
                           </v-btn>
                         </template>
@@ -132,19 +132,37 @@
                   </v-row>
                 </v-card>
                 <v-row class="d-flex justify-space-between ma-0">
-                  <v-col class="d-flex flex-column">
+                  <v-col class="d-flex flex-column h-auto border">
                     <ul v-for="object in object_info" :key="object.id" class="pa-4">
                       <li class="d-flex justify-space-between">
-                        <b>{{ object.type }}</b>
+                        <div>
+                          <b>{{ object.title }}</b>
+                        </div>
                         <div :style="{ cursor: 'pointer' }">
                           <p class="emoji">
                             {{ object.priority === true ? '⭐' : null }}
                           </p>
                         </div>
                       </li>
+                      <li>
+                        <small>{{ object.systemOption }}</small>
+                      </li>
                       <v-divider></v-divider>
-                      <li>{{ object.name }}</li>
-                      <li>{{ object.detail }}</li>
+                      <li>
+                        <small>{{ object.author }}</small>
+                      </li>
+                      <li>
+                        <v-card-text>{{ object.description }}</v-card-text>
+                      </li>
+                      <li>
+                        <small :v-if="object.status === 'any'" :style="{ color: 'grey' }">Não iniciado</small>
+                      </li>
+                      <li>
+                        <small>Etapas: {{ object.step }}</small>
+                      </li>
+                      <li>
+                        <small>{{ object.createdAt }}</small>
+                      </li>
                       <li class="d-flex justify-space-between">
                         <v-btn @click="() => removeTask(object.id)">
                           <PhTrash :size="24" />
@@ -268,12 +286,12 @@ const addNewObject = async () => {
       name: name_object.value,
       detail: detail_object.value,
       priority: priority.value,
+      color: color.value.value,
       step: step.value.value,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     }
     type_object.value = ''
     name_object.value = ''
+    color.value = ''
     detail_object.value = ''
     priority.value = false
     // if (name_object.value.length != 0 && detail_object.value.length != 0) {
@@ -282,6 +300,7 @@ const addNewObject = async () => {
     // }
     const request = await axios.post(`${apiJson}/tasks`, modelObject)
     newItem()
+    return console.log(request.data)
   } catch (err) {
     console.log(`algo deu errado: ${err}`)
   }
