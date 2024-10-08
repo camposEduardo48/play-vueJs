@@ -1,9 +1,51 @@
-{ "users": [ { "id": "a4f0", "nickname": "campos_eduardo", "email": "oicedu48@gmail.com", "permissions": true, "createdAt":
-"2024-09-27T18:44:50.984Z" } ], "custumers": [], "companies": [], "objects": [ { "id": "c887" }, { "id": "cb4a", "type":
-"virtual", "name": "laser", "detail": "laser longa distância" }, { "id": "40a0", "type": "fisico", "name": "vassoura", "detail":
-"feita de madeira pura" }, { "id": "499a", "type": "virtual", "name": "bitcoin", "detail": "moeda virtual valiosa" }, { "id":
-"9ad7", "type": "virtual", "name": "midia digital", "detail": "jogos online" }, { "id": "530d", "type": "fisico", "name":
-"conteudo", "detail": "em fotos reveladas" }, { "id": "9498", "type": "fisico", "name": "xbox one", "detail": "semi novo",
-"createdAt": "2024-10-01T02:58:23.917Z", "updatedAt": "2024-10-01T02:58:23.917Z" }, { "id": "d72b", "type": "virtual", "name":
-"baby_girl", "detail": "a sweet doll", "createdAt": "2024-10-01T03:12:57.301Z", "updatedAt": "2024-10-01T03:12:57.301Z" }, { "id":
-"9f56", "name": "", "detail": "", "createdAt": "2024-10-01T03:13:08.925Z", "updatedAt": "2024-10-01T03:13:08.925Z" } ] }
+{
+  "users": [
+    {
+      "id": "a4f0",
+      "nickname": "campos_eduardo",
+      "email": "oicedu48@gmail.com",
+      "permissions": true,
+      "createdAt": "2024-09-27T18:44:50.984Z"
+    }
+  ],
+  "custumers": [],
+  "companies": [],
+  "list": [
+    {
+      "id": "a8a9",
+      "type": "Lazer",
+      "name": "jogar minecraft",
+      "detail": "as 23hoo comigo",
+      "priority": true,
+      "createdAt": "2024-10-01T14:00:33.732Z",
+      "updatedAt": "2024-10-01T14:00:33.732Z"
+    },
+    {
+      "id": "11ae",
+      "type": "Hobby",
+      "name": "Jogar golf",
+      "detail": "na arento",
+      "priority": false,
+      "createdAt": "2024-10-01T14:02:03.720Z",
+      "updatedAt": "2024-10-01T14:02:03.720Z"
+    },
+    {
+      "id": "bc42",
+      "type": "Hobby",
+      "name": "Jogar tenis",
+      "detail": "jogar tenis na mooca",
+      "priority": false,
+      "createdAt": "2024-10-01T16:38:44.661Z",
+      "updatedAt": "2024-10-01T16:38:44.661Z"
+    },
+    {
+      "id": "abd3",
+      "type": "Hobby",
+      "name": "jogo da velha",
+      "detail": "achar um oponente para jogar",
+      "priority": false,
+      "createdAt": "2024-10-01T19:41:38.018Z",
+      "updatedAt": "2024-10-01T19:41:38.018Z"
+    }
+  ]
+}

@@ -1355,7 +1355,7 @@ snapshots:
 
   '@vue/shared@3.5.4': {}
 
-  '@vuetify/loader-shared@2.0.3(vue@3.5.4(typescript@5.6.2))(vuetify@3.7.1(typescript@5.6.2)(vite-plugin-vuetify@2.0.4)(vue@3.5.4(typescript@5.6.2)))':
+  '@vuetify/loader-shared@2.0.3(vue@3.5.4(typescript@5.6.2))(vuetify@3.7.1)':
     dependencies:
       upath: 2.0.1
       vue: 3.5.4(typescript@5.6.2)
@@ -1765,7 +1765,7 @@ snapshots:
 
   vite-plugin-vuetify@2.0.4(vite@5.4.4(@types/node@20.16.5)(sass@1.77.6))(vue@3.5.4(typescript@5.6.2))(vuetify@3.7.1):
     dependencies:
-      '@vuetify/loader-shared': 2.0.3(vue@3.5.4(typescript@5.6.2))(vuetify@3.7.1(typescript@5.6.2)(vite-plugin-vuetify@2.0.4)(vue@3.5.4(typescript@5.6.2)))
+      '@vuetify/loader-shared': 2.0.3(vue@3.5.4(typescript@5.6.2))(vuetify@3.7.1)
       debug: 4.3.7
       upath: 2.0.1
       vite: 5.4.4(@types/node@20.16.5)(sass@1.77.6)
