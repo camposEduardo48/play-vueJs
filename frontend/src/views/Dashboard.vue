@@ -10,12 +10,13 @@
     <Container>
       <v-col md="12" sm="12">
         <v-row>
-          <v-col class="d-flex flex-column ga-4">
+          <v-col class="d-flex flex-column ga-4 pb-10">
             <v-card elevation="10">
               <v-card-text class="d-flex align-center ga-2">
                 <span>
                   <h2>{{ user_nickname }}</h2>
                   <!-- mostrar o nome do usuario logado e autenticado -->
+                  <h3>{{ intlMoneyBrl }}</h3>
                 </span>
                 <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
                 <small>{{ 'Aplicar websockets' }}</small>
@@ -129,12 +130,7 @@
                       <b>{{ object.title }}</b>
                     </div>
                     <div v-if="object.status === 'any'" :style="{ cursor: 'pointer' }">
-                      <PhClock color="silver" :size="22" />
-                    </div>
-                    <div :style="{ cursor: 'pointer' }">
-                      <p class="emoji">
-                        {{ object.priority === true ? '⭐' : null }}
-                      </p>
+                      <PhClock color="grey" :size="22" />
                     </div>
                   </li>
 
@@ -165,6 +161,9 @@
                   </li>
                   <v-divider></v-divider>
                   <li class="d-flex justify-end ga-3">
+                    <v-btn @click="() => {}" disabled>
+                      <PhEyeClosed :size="22" />
+                    </v-btn>
                     <v-btn @click="() => removeTask(object.id)">
                       <PhTrash :size="22" />
                     </v-btn>
@@ -179,11 +178,12 @@
                 <ul v-else class="pa-4">
                   <li>
                     <div class="d-flex justify-center">
-                      <p>{{ 'Nenhuma tarefa registrada' }}</p>
+                      <p>{{ 'Nenhuma tarefa nova' }}</p>
                     </div>
                   </li>
                 </ul>
               </v-col>
+
               <v-col class="d-flex flex-column">
                 <ul
                   v-if="in_progress_task.length > 0"
@@ -229,6 +229,9 @@
                   </li>
                   <v-divider></v-divider>
                   <li class="d-flex justify-end ga-3">
+                    <v-btn @click="() => {}" disabled>
+                      <PhEyeClosed :size="22" />
+                    </v-btn>
                     <v-btn @click="() => removeTask(object.id)">
                       <PhTrash :size="22" />
                     </v-btn>
@@ -296,6 +299,10 @@
                   </li>
                   <li class="d-flex justify-end ga-3">
                     <v-btn @click="() => ''" disabled>
+                      <!-- <PhEyeClosed v-if="openEye" :size="22" /> -->
+                      <PhEye :size="22" />
+                    </v-btn>
+                    <v-btn @click="() => ''" disabled>
                       <p>Relatório</p>
                     </v-btn>
                   </li>
@@ -317,19 +324,18 @@
   </Layout>
 </template>
 <script setup>
-import Footer from '@/components/footer/Footer.vue'
-import Header from '@/components/header/Header.vue'
-import Layout from '@/components/layout/Layout.vue'
 import {
-  PhPlay,
+  PhCheckCircle,
+  PhClock,
+  PhEye,
+  PhEyeClosed,
   PhPause,
   PhPencil,
   PhPersonSimpleRun,
+  PhPlay,
+  PhStar,
   PhTrash,
   PhTrophy,
-  PhCheckCircle,
-  PhStar,
-  PhClock,
 } from '@phosphor-icons/vue'
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
@@ -358,6 +364,15 @@ const getAnyStatus = ref('')
 const getInProgressStatus = ref('')
 const getCompletedStatus = ref('')
 const priority = ref(false)
+const openEye = ref(false)
+
+const money = 3456.789
+const userMoney = 2324.8754
+const resMoney = Number(money + userMoney)
+
+const intlMoneyBrl = ref()
+const realMoney = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(resMoney)
+intlMoneyBrl.value = String(realMoney)
 
 // const editTask = async (id) => {
 //   try {
@@ -383,6 +398,13 @@ const newTask = () => {
   }) // ToastOptions
   return { newTask }
 }
+const deleteSuccess = () => {
+  toast.success('Tarefa removida com sucesso', {
+    autoClose: 1500,
+    isLoading: false,
+  })
+  return { deleteSuccess }
+}
 const invalid = () => {
   toast.error('Informação inválida', {
     autoClose: 2000,
@@ -401,6 +423,7 @@ const addNewObject = async () => {
   }
   try {
     newTask()
+
     const response = await axios.post(`${apiJson}/tasks`, modelObject)
     console.log(response)
   } catch (err) {
@@ -440,7 +463,7 @@ const getUser = async () => {
     const nick = datas.map((item) => item.nickname)
     user_nickname.value = nick[0]
   } catch (err) {
-    console.log(`algo deu errado: ${erro}`)
+    console.log(`algo deu errado: ${err}`)
   }
 }
 const nextStepTask = async (id) => {
@@ -459,6 +482,7 @@ const removeTask = async (id) => {
   try {
     const request = await axios.delete(`${apiJson}/tasks/${id}`)
     console.log(`Status: ${request.status}`)
+    deleteSuccess()
     return request
   } catch (err) {
     console.log(err)
@@ -501,6 +525,7 @@ span.status {
 }
 ul {
   display: flex;
+  cursor: pointer;
   flex-direction: column;
   gap: 0.5rem;
   justify-content: center;
