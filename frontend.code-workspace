@@ -1,11 +1,13 @@
 {
-	"folders": [
-		{
-			"path": "frontend"
-		},
-		{
-			"path": "../play-vueJs-backend"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "name": "frontend",
+      "path": "frontend"
+    },
+    {
+      "name": "play-vueJs-backend",
+      "path": "../play-vueJs-backend"
+    }
+  ],
+  "settings": {}
 }
