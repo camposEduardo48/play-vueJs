@@ -10,12 +10,10 @@
 .layout {
   box-sizing: border-box;
   display: flex;
-  margin-top: 90px;
-  gap: 1rem;
+  margin-top: 70px;
   flex-direction: column;
   position: absolute;
   height: 100%;
   width: 100%;
-  color: aqua;
 }
 </style>
