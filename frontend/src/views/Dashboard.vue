@@ -17,9 +17,10 @@
                   <h2>{{ user_nickname }}</h2>
                   <!-- mostrar o nome do usuario logado e autenticado -->
                   <h3>{{ intlMoneyBrl }}</h3>
+                  <h3>URL: {{ mostrarPorta }}</h3>
                 </span>
                 <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
-                <small>{{ 'Aplicar websockets' }}</small>
+                <small :style="{ color: 'red' }">{{ 'Aplicar websockets' }}</small>
                 <small>{{ 'Aplicar JWT no login' }}</small>
               </v-card-text>
               <v-col>
@@ -338,13 +339,15 @@ import {
   PhTrophy,
 } from '@phosphor-icons/vue'
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import { io } from 'socket.io-client'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
-import background from './../assets/bg-dashboard.svg'
-
-const img_background = background
-const apiJson = import.meta.env.VITE_DATABASE_URL
+const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
+const PORT = Number(import.meta.env.VITE_PORT)
+const socket = io(`${DATABASE_URL}${PORT}`)
+const mostrarPorta = ref()
+mostrarPorta.value = `${DATABASE_URL}${PORT}`
 
 const status_test = ref(true)
 const step = ref([1, 2, 3, 4, 5])
@@ -364,7 +367,6 @@ const getAnyStatus = ref('')
 const getInProgressStatus = ref('')
 const getCompletedStatus = ref('')
 const priority = ref(false)
-const openEye = ref(false)
 
 const money = 3456.789
 const userMoney = 2324.8754
@@ -376,7 +378,7 @@ intlMoneyBrl.value = String(realMoney)
 
 // const editTask = async (id) => {
 //   try {
-//     const request = await axios.patch(`${apiJson}/list/${id}`, {
+//     const request = await axios.patch(`${DATABASE_URL}/list/${id}`, {
 //       // alterar o status da task e mover parar a próxima coluna
 //     })
 //     console.log(`Edit the task => ${id}`)
@@ -424,7 +426,7 @@ const addNewObject = async () => {
   try {
     newTask()
 
-    const response = await axios.post(`${apiJson}/tasks`, modelObject)
+    const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject)
     console.log(response)
   } catch (err) {
     console.log(`algo deu errado: ${err}`)
@@ -433,7 +435,7 @@ const addNewObject = async () => {
 
 const getObject = async () => {
   try {
-    const request = await axios.get(`${apiJson}/tasks`)
+    const request = await axios.get(`${DATABASE_URL}${PORT}/tasks`)
     object_info.value = request.data
     const object_datas = object_info.value
 
@@ -457,7 +459,7 @@ const getObject = async () => {
 }
 const getUser = async () => {
   try {
-    const request = await axios.get(`${apiJson}/users`)
+    const request = await axios.get(`${DATABASE_URL}${PORT}/users`)
     user_info.value = request.data
     const datas = user_info.value
     const nick = datas.map((item) => item.nickname)
@@ -469,7 +471,7 @@ const getUser = async () => {
 const nextStepTask = async (id) => {
   // só concluir a task appós finalizar todos os steps de cada task
   try {
-    const request = await axios.patch(`${apiJson}/tasks/${id}`, {
+    const request = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
       status: 'in-progress',
     })
     console.log(`Next step column => ${id}`)
@@ -480,7 +482,7 @@ const nextStepTask = async (id) => {
 
 const removeTask = async (id) => {
   try {
-    const request = await axios.delete(`${apiJson}/tasks/${id}`)
+    const request = await axios.delete(`${DATABASE_URL}${PORT}/tasks/${id}`)
     console.log(`Status: ${request.status}`)
     deleteSuccess()
     return request
@@ -489,8 +491,23 @@ const removeTask = async (id) => {
   }
 }
 onMounted(() => {
+  socket.on('connect', () => {
+    console.log(`Conectado com ID: ${socket.id}`)
+  })
+
+  socket.on('newTask', (data) => {
+    // Recebe uma nova tarefa
+    console.log('Nova tarefa recebida:', data)
+    getObject() // Atualiza as tarefas
+  })
+
   getUser()
   getObject()
+})
+onBeforeUnmount(() => {
+  // Desconectar o socket quando o componente for destruído
+  socket.disconnect()
+  console.log('Socket desconectado')
 })
 </script>
 <style scoped>
