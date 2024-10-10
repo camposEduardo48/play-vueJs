@@ -89,7 +89,6 @@
                       :style="{ background: '#fff', color: '#874b91' }"
                       text="Adicionar nova tarefa "
                       v-bind="activatorProps"
-                      @click="() => {}"
                     >
                     </v-btn>
                   </template>
@@ -110,14 +109,8 @@
                         <v-form @submit.prevent="() => addNewObject()" class="pa-6">
                           <v-select v-model="title.value" :items="title" label="Selecione o tipo de tarefa" required></v-select>
                           <v-select v-model="color.value" :items="color" label="Selecione a cor do card"></v-select>
-                          <v-card-text>
-                            <small>{{ color.value === 'khaki' ? 'Amarelo 🟡' : null }}</small>
-                            <small>{{ color.value === 'lightCoral' ? 'Vermelho 🔴' : null }}</small>
-                            <small>{{ color.value === 'lightSkyBlue' ? 'Azul 🔵' : null }}</small>
-                            <small>{{ color.value === 'lightGreen' ? 'Verde 🟢' : null }}</small>
-                          </v-card-text>
                           <v-text-field v-model="name_object" label="Titulo da tarefa" required></v-text-field>
-                          <v-text-field v-model="detail_object" label="Descreva a tarefa" required></v-text-field>
+                          <v-textarea v-model="detail_object" label="Descreva a tarefa" required></v-textarea>
                           <v-checkbox v-model="priority" label="Prioridade para concluir essa tarefa?"></v-checkbox>
                           <v-select v-model="step.value" :items="step" label="Quantidade de steps"></v-select>
                           <small>Não é obrigatório selecionar á quantidade de steps.</small>
@@ -480,7 +473,6 @@ const in_progress_task = ref([])
 const completed_task = ref([])
 const user_nickname = ref('')
 const title = ref(['ZapYou', 'ZapYou 2.0', 'Sisconep', 'KENGOO'])
-const color = ref(['lightSkyBlue', 'lightCoral', 'lightGreen', 'khaki'])
 const name_object = ref('')
 const detail_object = ref('')
 const filterStatus = ref('')
@@ -490,7 +482,8 @@ const getCompletedStatus = ref('')
 const priority = ref(false)
 const date = ref('')
 const hours = ref('')
-const totalExistTasks = ref('')
+
+const color = ref(['lightSkyBlue', 'khaki', 'lightCoral', 'lightGreen'])
 
 const money = 3456.789
 const userMoney = 2324.8754
@@ -511,14 +504,6 @@ intlMoneyBrl.value = String(realMoney)
 //     console.log(err)
 //   }
 // }
-
-const allTasksCalculate = () => {
-  const sum = getAnyStatus.value + getInProgressStatus.value + getCompletedStatus.value
-  totalExistTasks.value = sum
-  const total = totalExistTasks.value
-  console.log(total)
-}
-allTasksCalculate()
 
 const newItem = () => {
   toast.success('Adicionado com sucesso', {
