@@ -7,8 +7,8 @@
   >
     <Container>
       <v-row>
-        <v-col md="12" sm="12" class="d-flex justify-center mt-10">
-          <v-card class="h-auto w-33" elevation="20">
+        <v-col md="12" sm="12" class="d-flex justify-center align-center h-100 mt-10">
+          <v-card class="h-auto w-25" elevation="20">
             <v-row>
               <v-col class="d-flex justify-center">
                 <v-form class="d-flex flex-column h-auto w-100 ma-6 pa-2 ga-4" elevation="6" @submit.prevent="() => userLogin()">
@@ -116,7 +116,9 @@ onMounted(() => {})
 .v-btn.v-btn--density-default {
   position: relative;
 }
-
+form {
+  max-width: 350px;
+}
 ul {
   list-style: none;
 }
