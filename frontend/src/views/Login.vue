@@ -56,7 +56,8 @@ import { onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import background from './../assets/bg-login.svg'
-const apiJson = import.meta.env.VITE_DATABASE_URL
+const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
+const PORT = Number(import.meta.env.VITE_PORT)
 const img_background = background
 
 const user_nickname = ref('')
@@ -80,14 +81,14 @@ const invalid = () => {
 const problem = () => {
   toast.error('Acessado negado', {
     className: 'custom-style-toastify',
-    autoClose: 2000,
+    autoClose: 1200,
   }) // ToastOptions
   return { problem }
 }
 
 const userLogin = async () => {
   try {
-    const response = await axios.post(`${apiJson}/users`, {
+    const response = await axios.post(`${DATABASE_URL}${PORT}/users`, {
       nickname: user_nickname.value,
       password: user_password.value,
     })

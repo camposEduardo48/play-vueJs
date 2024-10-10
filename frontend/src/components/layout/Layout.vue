@@ -10,7 +10,6 @@
 .layout {
   box-sizing: border-box;
   display: flex;
-  margin-top: 70px;
   flex-direction: column;
   position: absolute;
   height: 100%;

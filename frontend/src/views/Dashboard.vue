@@ -1,5 +1,5 @@
 <template>
-  <Layout>
+  <Layout class="container">
     <Header>
       <v-row>
         <v-card-text class="d-flex justify-end">
@@ -17,10 +17,9 @@
                   <h2>{{ user_nickname }}</h2>
                   <!-- mostrar o nome do usuario logado e autenticado -->
                   <h3>{{ intlMoneyBrl }}</h3>
-                  <h3>URL: {{ mostrarPorta }}</h3>
                 </span>
                 <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
-                <small :style="{ color: 'red' }">{{ 'Aplicar websockets' }}</small>
+                <small :style="{ color: '#000', fontWeight: 'bold' }">{{ 'Aplicar websockets' }}</small>
                 <small>{{ 'Aplicar JWT no login' }}</small>
               </v-card-text>
               <v-col>
@@ -134,7 +133,6 @@
                       <PhClock color="grey" :size="22" />
                     </div>
                   </li>
-
                   <li>
                     <small>{{ object.systemOption }}</small>
                   </li>
@@ -184,7 +182,6 @@
                   </li>
                 </ul>
               </v-col>
-
               <v-col class="d-flex flex-column">
                 <ul
                   v-if="in_progress_task.length > 0"
@@ -357,7 +354,7 @@ const any_task = ref([])
 const in_progress_task = ref([])
 const completed_task = ref([])
 const user_nickname = ref('')
-const title = ref(['ZapYou', 'ZapYou 2.0', 'Sisconep'])
+const title = ref(['ZapYou', 'ZapYou 2.0', 'Sisconep', 'KENGOO'])
 const color = ref(['Azul', 'Vermelho', 'Verde', 'Amarelo'])
 const name_object = ref('')
 const detail_object = ref('')
@@ -558,6 +555,10 @@ h2 {
 }
 svg {
   color: #874b91;
+}
+.container {
+  background: rgb(234, 210, 238);
+  background: linear-gradient(90deg, rgba(234, 210, 238, 1) 0%, rgba(135, 75, 145, 1) 100%);
 }
 .custom-z-index {
   word-wrap: break-word;
