@@ -67,7 +67,7 @@ const show_users = ref([])
 
 const notifyAccess = () => {
   toast.success(`Bem vindo de volta, ${user_nickname.value}!`, {
-    autoClose: 4000,
+    autoClose: 1500,
   }) // ToastOptions
   return { notifyAccess }
 }
@@ -96,10 +96,11 @@ const userLogin = async () => {
       notifyAccess()
       setTimeout(() => {
         window.location.replace('/dashboard')
-      }, 3500)
+      }, 1200)
       return console.log(`Acesso liberado!`)
     }
   } catch (err) {
+    console.log(`${user_nickname.value} | ${user_password.value}`)
     console.log(`Usuário ou senha inválidos!`)
     invalid()
   }
