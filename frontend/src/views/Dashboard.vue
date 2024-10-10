@@ -318,7 +318,6 @@
         </v-row>
       </v-col>
     </Container>
-    <Footer></Footer>
   </Layout>
 </template>
 <script setup>
@@ -340,12 +339,10 @@ import { io } from 'socket.io-client'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+
 const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PORT = Number(import.meta.env.VITE_PORT)
 const socket = io(`${DATABASE_URL}${PORT}`)
-const mostrarPorta = ref()
-mostrarPorta.value = `${DATABASE_URL}${PORT}`
-
 const status_test = ref(true)
 const step = ref([1, 2, 3, 4, 5])
 const user_info = ref('')
@@ -393,7 +390,7 @@ const newItem = () => {
 }
 const newTask = () => {
   toast.success('Nova tarefa adicionada', {
-    autoClose: 4000,
+    autoClose: 3000,
   }) // ToastOptions
   return { newTask }
 }
@@ -422,9 +419,13 @@ const addNewObject = async () => {
   }
   try {
     newTask()
-
     const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject)
-    console.log(response)
+    title.value.value = ''
+    name_object.value = ''
+    detail_object.value = ''
+    priority.value = ''
+    color.value.value = ''
+    step.value.value = ''
   } catch (err) {
     console.log(`algo deu errado: ${err}`)
   }
@@ -433,6 +434,7 @@ const addNewObject = async () => {
 const getObject = async () => {
   try {
     const request = await axios.get(`${DATABASE_URL}${PORT}/tasks`)
+
     object_info.value = request.data
     const object_datas = object_info.value
 
@@ -450,6 +452,8 @@ const getObject = async () => {
     getAnyStatus.value = statusAny.length
     getInProgressStatus.value = statusInProgress.length
     getCompletedStatus.value = statusCompleted.length
+
+    socket.emit('get-tasks', request)
   } catch (err) {
     console.log(`algo deu errado: ${err}`)
   }
@@ -468,9 +472,10 @@ const getUser = async () => {
 const nextStepTask = async (id) => {
   // só concluir a task appós finalizar todos os steps de cada task
   try {
-    const request = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
+    const response = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
       status: 'in-progress',
     })
+    socket.emit('task-updated', response.data)
     console.log(`Next step column => ${id}`)
   } catch (err) {
     console.log(err)
@@ -482,6 +487,10 @@ const removeTask = async (id) => {
     const request = await axios.delete(`${DATABASE_URL}${PORT}/tasks/${id}`)
     console.log(`Status: ${request.status}`)
     deleteSuccess()
+    socket.on('request', (deletedTask) => {
+      // Remover a tarefa excluída da lista
+      request = request.filter((task) => task.id !== deletedTask.id)
+    })
     return request
   } catch (err) {
     console.log(err)
@@ -492,10 +501,32 @@ onMounted(() => {
     console.log(`Conectado com ID: ${socket.id}`)
   })
 
-  socket.on('newTask', (data) => {
+  socket.on('task-updated', (updatedTask) => {
+    console.log('Tarefa atualizada:', updatedTask)
+    // Atualizar a tarefa na lista com base no ID
+    const index = any_task.value.findIndex((task) => task.id === updatedTask.id)
+    if (index !== -1) {
+      any_task.value[index] = updatedTask // Substituir a tarefa existente pela atualizada
+    }
+    const indexPr = in_progress_task.value.findIndex((task) => task.id === updatedTask.id)
+    if (indexPr !== -1) {
+      in_progress_task.value[indexPr] = updatedTask // Substituir a tarefa existente pela atualizada
+    }
+
+    const indexC = in_progress_task.value.findIndex((task) => task.id === updatedTask.id)
+    if (indexC !== -1) {
+      completed_task.value[indexC] = updatedTask // Substituir a tarefa existente pela atualizada
+    }
+    // '' dentro das aspas deve-se definir o nome dos eventos que serao chamados entre front e back
     // Recebe uma nova tarefa
-    console.log('Nova tarefa recebida:', data)
-    getObject() // Atualiza as tarefas
+    getObject()
+  })
+
+  socket.on('task-deleted', (deletedTask) => {
+    console.log('Tarefa excluída: ', deletedTask.id)
+    object_info.value = object_info.value.filter((task) => task.id !== deletedTask.id)
+
+    getObject()
   })
 
   getUser()

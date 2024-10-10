@@ -7,6 +7,10 @@
 <script setup></script>
 
 <style scoped>
+* {
+  animation: fadeOut 0.5s ease-in-out forwards;
+  transform: scale(1);
+}
 .layout {
   box-sizing: border-box;
   display: flex;
