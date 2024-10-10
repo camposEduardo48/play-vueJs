@@ -17,52 +17,67 @@
               </v-card-text>
               <v-row>
                 <v-col>
-                  <v-sheet class="d-flex justify-end"
-                    ><v-btn
-                      class="d-flex ga-2"
-                      :style="{ background: '#fff', color: '#874b91' }"
-                      text="Editar perfil"
-                      v-bind="activatorProps"
-                      @click="() => {}"
-                    >
-                    </v-btn
-                  ></v-sheet>
+                  <v-sheet class="d-flex justify-end">
+                    <v-dialog>
+                      <template v-slot:activator="{ props: activatorProps }">
+                        <v-btn
+                          class="d-flex ga-2"
+                          :style="{ background: '#fff', color: '#874b91' }"
+                          text="Editar perfil"
+                          v-bind="activatorProps"
+                          @click="() => {}"
+                        >
+                        </v-btn>
+                      </template>
+                      <template v-slot:default="{ isActive }">
+                        <v-sheet>
+                          <v-card-text>Modal perfil</v-card-text>
+                        </v-sheet>
+                      </template>
+                    </v-dialog>
+                  </v-sheet>
                 </v-col>
               </v-row>
             </v-card>
             <v-sheet class="d-flex justify-space-between ga-5">
               <v-card class="d-flex justify-center w-33" elevation="4">
-                <v-card>
-                  <v-card-text class="d-flex align-center justify-space-between ga-2">
+                <v-card-text class="d-flex flex-column align-center justify-space-between ga-2">
+                  <span class="d-flex justify-space-between w-100">
                     <h3>Congelado</h3>
-                    <PhPause :size="32" />
-                  </v-card-text>
-                  <v-card-text class="d-flex justify-center align-center">
-                    <h2>{{ getAnyStatus }}</h2>
-                  </v-card-text>
-                </v-card>
-              </v-card>
-              <v-card class="d-flex w-33 justify-center" elevation="4">
-                <v-card>
-                  <v-card-text class="d-flex align-center justify-space-between ga-2">
-                    <h3>Em andamento</h3>
-                    <PhPersonSimpleRun :size="32" />
-                  </v-card-text>
-                  <v-card-text class="d-flex justify-center align-center">
-                    <h2>{{ getInProgressStatus }}</h2>
-                  </v-card-text>
-                </v-card>
+                    <PhPause :size="32"
+                  /></span>
+                  <span class="d-flex justify-center align-center">
+                    <v-card-text>
+                      <h2>{{ getAnyStatus }}</h2>
+                    </v-card-text>
+                  </span>
+                </v-card-text>
               </v-card>
               <v-card class="d-flex justify-center w-33" elevation="4">
-                <v-card>
-                  <v-card-text class="d-flex w-100 align-center justify-space-between ga-2">
+                <v-card-text class="d-flex flex-column align-center justify-space-between ga-2">
+                  <span class="d-flex justify-space-between w-100">
+                    <h3>Em andamento</h3>
+                    <PhPersonSimpleRun :size="32" />
+                  </span>
+                  <span class="d-flex justify-center align-center">
+                    <v-card-text>
+                      <h2>{{ getInProgressStatus }}</h2>
+                    </v-card-text>
+                  </span>
+                </v-card-text>
+              </v-card>
+              <v-card class="d-flex justify-center w-33" elevation="4">
+                <v-card-text class="d-flex flex-column align-center justify-space-between ga-2">
+                  <span class="d-flex justify-space-between w-100">
                     <h3>Finalizado</h3>
                     <PhTrophy :size="32" />
-                  </v-card-text>
-                  <v-card-text class="d-flex justify-center align-center">
-                    <h2>{{ getCompletedStatus }}</h2>
-                  </v-card-text>
-                </v-card>
+                  </span>
+                  <span class="d-flex justify-center align-center">
+                    <v-card-text>
+                      <h2>{{ getCompletedStatus }}</h2>
+                    </v-card-text>
+                  </span>
+                </v-card-text>
               </v-card>
             </v-sheet>
             <v-row>
@@ -94,7 +109,13 @@
                       <v-card>
                         <v-form @submit.prevent="() => addNewObject()" class="pa-6">
                           <v-select v-model="title.value" :items="title" label="Selecione o tipo de tarefa" required></v-select>
-                          <v-select v-model="color.value" :items="color" label="Selecione a cor do card" disabled></v-select>
+                          <v-select v-model="color.value" :items="color" label="Selecione a cor do card"></v-select>
+                          <v-card-text>
+                            <small>{{ color.value === 'khaki' ? 'Amarelo 🟡' : null }}</small>
+                            <small>{{ color.value === 'lightCoral' ? 'Vermelho 🔴' : null }}</small>
+                            <small>{{ color.value === 'lightSkyBlue' ? 'Azul 🔵' : null }}</small>
+                            <small>{{ color.value === 'lightGreen' ? 'Verde 🟢' : null }}</small>
+                          </v-card-text>
                           <v-text-field v-model="name_object" label="Titulo da tarefa" required></v-text-field>
                           <v-text-field v-model="detail_object" label="Descreva a tarefa" required></v-text-field>
                           <v-checkbox v-model="priority" label="Prioridade para concluir essa tarefa?"></v-checkbox>
@@ -169,9 +190,40 @@
                     <v-btn @click="() => {}" disabled>
                       <PhEyeClosed :size="22" />
                     </v-btn>
-                    <v-btn @click="() => removeTask(object.id)">
-                      <PhTrash :size="22" />
-                    </v-btn>
+                    <v-dialog max-width="600px">
+                      <template v-slot:activator="{ props: activatorProps }">
+                        <v-btn v-bind="activatorProps">
+                          <PhTrash :size="22" />
+                        </v-btn>
+                      </template>
+                      <template v-slot:default="{ isActive }">
+                        <v-card>
+                          <v-card-text>
+                            <h3>
+                              Deseja realmente excluir a tarefa "<b>{{ object.title }}</b
+                              >"?
+                            </h3>
+                          </v-card-text>
+                          <v-divider></v-divider>
+                          <v-sheet>
+                            <v-card-text>{{ object.description }}</v-card-text>
+                            <v-card-text>
+                              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem nam nisi, dolorum corrupti laborum
+                              rerum esse possimus molestias, nostrum necessitatibus aliquam pariatur, dolore delectus consectetur!
+                              Hic, deleniti? Corrupti, debitis pariatur.
+                            </v-card-text>
+                          </v-sheet>
+                          <v-sheet>
+                            <v-col>
+                              <v-row class="d-flex justify-end pa-4">
+                                <v-btn variant="plain" @click="isActive.value = false">Cancelar</v-btn>
+                                <v-btn variant="tonal" @click="() => removeTask(object.id)">Confirmar</v-btn>
+                              </v-row>
+                            </v-col>
+                          </v-sheet>
+                        </v-card>
+                      </template>
+                    </v-dialog>
                     <v-btn @click="() => editTask(object.id)" disabled>
                       <PhPencil :size="22" />
                     </v-btn>
@@ -233,12 +285,82 @@
                   </li>
                   <v-divider></v-divider>
                   <li class="d-flex justify-end ga-3">
-                    <v-btn @click="() => {}" disabled>
-                      <PhEyeClosed :size="22" />
-                    </v-btn>
-                    <v-btn @click="() => removeTask(object.id)">
-                      <PhTrash :size="22" />
-                    </v-btn>
+                    <v-dialog max-width="600px">
+                      <template v-slot:activator="{ props: activatorProps }">
+                        <v-btn v-bind="activatorProps">
+                          <PhEye :size="22" />
+                        </v-btn>
+                      </template>
+                      <template v-slot:default="{ isActive }">
+                        <v-card>
+                          <v-card-text>
+                            <h3>{{ object.title }}</h3>
+                          </v-card-text>
+                          <v-divider></v-divider>
+                          <v-sheet>
+                            <v-card-text>{{ object.description }}</v-card-text>
+                            <v-card-text>
+                              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem nam nisi, dolorum corrupti laborum
+                              rerum esse possimus molestias, nostrum necessitatibus aliquam pariatur, dolore delectus consectetur!
+                              Hic, deleniti? Corrupti, debitis pariatur.
+                            </v-card-text>
+                            <v-card-text>
+                              <h4>Quandtidade de steps: {{ object.step }}</h4>
+                            </v-card-text>
+                            <v-divider></v-divider>
+                            <v-card :style="{ boxShadow: 'none' }">
+                              <v-card-text v-for="step in object.step">
+                                <v-checkbox label="Completar tal coisa após any...."></v-checkbox>
+                              </v-card-text>
+                            </v-card>
+                            <v-card-text>
+                              <small>Author: {{ object.lastName }}</small>
+                            </v-card-text>
+                          </v-sheet>
+                          <v-sheet>
+                            <v-col>
+                              <v-row class="d-flex justify-end pa-4">
+                                <v-btn variant="plain" @click="isActive.value = false">Cancelar</v-btn>
+                                <v-btn variant="tonal" @click="() => toCompleteTask(object.id)">Confirmar</v-btn>
+                              </v-row>
+                            </v-col>
+                          </v-sheet>
+                        </v-card>
+                      </template>
+                    </v-dialog>
+                    <v-dialog max-width="600px">
+                      <template v-slot:activator="{ props: activatorProps }">
+                        <v-btn v-bind="activatorProps">
+                          <PhTrash :size="22" />
+                        </v-btn>
+                      </template>
+                      <template v-slot:default="{ isActive }">
+                        <v-card>
+                          <v-card-text>
+                            <h3>
+                              Deseja realmente excluir a tarefa <b>"{{ object.title }}"</b>?
+                            </h3>
+                          </v-card-text>
+                          <v-divider></v-divider>
+                          <v-sheet>
+                            <v-card-text>{{ object.description }}</v-card-text>
+                            <v-card-text>
+                              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem nam nisi, dolorum corrupti laborum
+                              rerum esse possimus molestias, nostrum necessitatibus aliquam pariatur, dolore delectus consectetur!
+                              Hic, deleniti? Corrupti, debitis pariatur.
+                            </v-card-text>
+                          </v-sheet>
+                          <v-sheet>
+                            <v-col>
+                              <v-row class="d-flex justify-end pa-4">
+                                <v-btn variant="plain" @click="isActive.value = false">Cancelar</v-btn>
+                                <v-btn variant="tonal" @click="() => removeTask(object.id)">Confirmar</v-btn>
+                              </v-row>
+                            </v-col>
+                          </v-sheet>
+                        </v-card>
+                      </template>
+                    </v-dialog>
                     <v-btn @click="() => editTask(object.id)" disabled>
                       <PhPencil :size="22" />
                     </v-btn>
@@ -358,15 +480,17 @@ const in_progress_task = ref([])
 const completed_task = ref([])
 const user_nickname = ref('')
 const title = ref(['ZapYou', 'ZapYou 2.0', 'Sisconep', 'KENGOO'])
-const color = ref(['Azul', 'Vermelho', 'Verde', 'Amarelo'])
+const color = ref(['lightSkyBlue', 'lightCoral', 'lightGreen', 'khaki'])
 const name_object = ref('')
 const detail_object = ref('')
-const color_task = ''
 const filterStatus = ref('')
 const getAnyStatus = ref('')
 const getInProgressStatus = ref('')
 const getCompletedStatus = ref('')
 const priority = ref(false)
+const date = ref('')
+const hours = ref('')
+const totalExistTasks = ref('')
 
 const money = 3456.789
 const userMoney = 2324.8754
@@ -387,6 +511,14 @@ intlMoneyBrl.value = String(realMoney)
 //     console.log(err)
 //   }
 // }
+
+const allTasksCalculate = () => {
+  const sum = getAnyStatus.value + getInProgressStatus.value + getCompletedStatus.value
+  totalExistTasks.value = sum
+  const total = totalExistTasks.value
+  console.log(total)
+}
+allTasksCalculate()
 
 const newItem = () => {
   toast.success('Adicionado com sucesso', {
@@ -426,24 +558,28 @@ const addNewObject = async () => {
     title: name_object.value,
     description: detail_object.value,
     priority: priority.value,
-    color: color.value.value,
+    cardColor: color.value.value,
     step: step.value.value,
   }
   try {
     newTask()
     const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject)
-    socket.emit('new-task', response.data)
     title.value.value = ''
     name_object.value = ''
     detail_object.value = ''
     priority.value = ''
     color.value.value = ''
     step.value.value = ''
+    // refresh
+    console.log(response)
+    socket.emit('new-task', response.data)
   } catch (err) {
     console.log(`algo deu errado: ${err}`)
   }
 }
-
+const toCompleteTask = () => {
+  console.log('if all task are complete, done the task')
+}
 const getObject = async () => {
   try {
     const request = await axios.get(`${DATABASE_URL}${PORT}/tasks`)
@@ -508,6 +644,9 @@ const removeTask = async (id) => {
   }
 }
 onMounted(() => {
+  getUser()
+  getObject()
+
   socket.on('connect', () => {
     console.log(`Conectado com ID: ${socket.id}`)
   })
@@ -516,7 +655,6 @@ onMounted(() => {
     getObject()
   })
   socket.on('task-updated', (updatedTask) => {
-    console.log('Tarefa atualizada:', updatedTask)
     // Atualizar a tarefa na lista com base no ID
     const index = any_task.value.findIndex((task) => task.id === updatedTask.id)
     if (index !== -1) {
@@ -538,8 +676,6 @@ onMounted(() => {
     object_info.value = object_info.value.filter((task) => task.id !== deletedTask.id)
     getObject()
   })
-  getUser()
-  getObject()
 })
 onBeforeUnmount(() => {
   // Desconectar o socket quando o componente for destruído
