@@ -1,12 +1,5 @@
 <template>
-  <Layout class="container">
-    <Header>
-      <v-row>
-        <v-card-text class="d-flex justify-end">
-          {{ user_nickname }}
-        </v-card-text>
-      </v-row>
-    </Header>
+  <Layout class="container position-relative">
     <Container>
       <v-col md="12" sm="12">
         <v-row>
@@ -19,104 +12,117 @@
                   <h3>{{ intlMoneyBrl }}</h3>
                 </span>
                 <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
-                <small :style="{ color: '#000', fontWeight: 'bold' }">{{ 'Aplicar websockets' }}</small>
+                <small :style="{ color: 'silver' }">{{ 'Aplicar websockets' }}</small>
                 <small>{{ 'Aplicar JWT no login' }}</small>
               </v-card-text>
-              <v-col>
-                <v-row class="d-flex justify-center ga-4">
-                  <v-card class="d-flex justify-center w-25" elevation="4">
-                    <v-card>
-                      <v-card-text class="d-flex align-center justify-space-between ga-2">
-                        <h3>Congelado</h3>
-                        <PhPause :size="32" />
-                      </v-card-text>
-                      <v-card-text class="d-flex justify-center align-center">
-                        <h2>{{ getAnyStatus }}</h2>
-                      </v-card-text>
-                    </v-card>
-                  </v-card>
-                  <v-card class="d-flex w-25 justify-center" elevation="4">
-                    <v-card>
-                      <v-card-text class="d-flex align-center justify-space-between ga-2">
-                        <h3>Em andamento</h3>
-                        <PhPersonSimpleRun :size="32" />
-                      </v-card-text>
-                      <v-card-text class="d-flex justify-center align-center">
-                        <h2>{{ getInProgressStatus }}</h2>
-                      </v-card-text>
-                    </v-card>
-                  </v-card>
-                  <v-card class="d-flex justify-center w-25" elevation="4">
-                    <v-card>
-                      <v-card-text class="d-flex w-100 align-center justify-space-between ga-2">
-                        <h3>Finalizado</h3>
-                        <PhTrophy :size="32" />
-                      </v-card-text>
-                      <v-card-text class="d-flex justify-center align-center">
-                        <h2>{{ getCompletedStatus }}</h2>
-                      </v-card-text>
-                    </v-card>
-                  </v-card>
-                </v-row>
-              </v-col>
-              <v-row class="pa-4">
-                <v-col class="d-flex justify-end">
-                  <v-dialog max-width="550px">
-                    <template v-slot:activator="{ props: activatorProps }">
-                      <v-btn
-                        :style="{ background: '#874b91', marginTop: '8px', color: '#fff' }"
-                        text="Adicionar nova tarefa"
-                        v-bind="activatorProps"
-                        @click="() => {}"
-                      >
-                      </v-btn>
-                    </template>
-                    <template v-slot:default="{ isActive }">
-                      <v-col>
-                        <v-card>
-                          <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn variant="plain" text="Fechar" @click="isActive.value = false"></v-btn>
-                          </v-card-actions>
-                          <v-card-title> Adicionar nova tarefa </v-card-title>
-                          <v-card-text>
-                            Dentro de cada tarefa, poderemos adicionar steps, que serão checkbox tickadas ao longo da jornada de
-                            desenvolvimento.
-                          </v-card-text>
-                        </v-card>
-                        <v-card>
-                          <v-form @submit.prevent="() => addNewObject()" class="pa-6">
-                            <v-select v-model="title.value" :items="title" label="Selecione o tipo de tarefa" required></v-select>
-                            <v-select v-model="color.value" :items="color" label="Selecione a cor do card" disabled></v-select>
-                            <v-text-field v-model="name_object" label="Titulo da tarefa" required></v-text-field>
-                            <v-text-field v-model="detail_object" label="Descreva a tarefa" required></v-text-field>
-                            <v-checkbox v-model="priority" label="Prioridade para concluir essa tarefa?"></v-checkbox>
-                            <v-select v-model="step.value" :items="step" label="Quantidade de steps"></v-select>
-                            <small>Não é obrigatório selecionar á quantidade de steps.</small>
-                            <small>
-                              a quantidade de steps criara de forma automatica a caixa de steps, após a execução da função passar
-                              throw new error</small
-                            >
-                            <v-card-actions>
-                              <v-row class="d-flex justify-end">
-                                <v-btn variant="plain" text="Cancelar" @click="isActive.value = false"></v-btn>
-                                <v-btn
-                                  :style="{ background: '#874b91', color: '#fff' }"
-                                  variant="tonal"
-                                  text="Confirmar"
-                                  type="submit"
-                                ></v-btn>
-                              </v-row>
-                            </v-card-actions>
-                          </v-form>
-                        </v-card>
-                      </v-col>
-                    </template>
-                  </v-dialog>
+              <v-row>
+                <v-col>
+                  <v-sheet class="d-flex justify-end"
+                    ><v-btn
+                      class="d-flex ga-2"
+                      :style="{ background: '#fff', color: '#874b91' }"
+                      text="Editar perfil"
+                      v-bind="activatorProps"
+                      @click="() => {}"
+                    >
+                    </v-btn
+                  ></v-sheet>
                 </v-col>
               </v-row>
             </v-card>
-            <v-row class="d-flex justify-space-between">
+            <v-sheet class="d-flex justify-space-between ga-5">
+              <v-card class="d-flex justify-center w-33" elevation="4">
+                <v-card>
+                  <v-card-text class="d-flex align-center justify-space-between ga-2">
+                    <h3>Congelado</h3>
+                    <PhPause :size="32" />
+                  </v-card-text>
+                  <v-card-text class="d-flex justify-center align-center">
+                    <h2>{{ getAnyStatus }}</h2>
+                  </v-card-text>
+                </v-card>
+              </v-card>
+              <v-card class="d-flex w-33 justify-center" elevation="4">
+                <v-card>
+                  <v-card-text class="d-flex align-center justify-space-between ga-2">
+                    <h3>Em andamento</h3>
+                    <PhPersonSimpleRun :size="32" />
+                  </v-card-text>
+                  <v-card-text class="d-flex justify-center align-center">
+                    <h2>{{ getInProgressStatus }}</h2>
+                  </v-card-text>
+                </v-card>
+              </v-card>
+              <v-card class="d-flex justify-center w-33" elevation="4">
+                <v-card>
+                  <v-card-text class="d-flex w-100 align-center justify-space-between ga-2">
+                    <h3>Finalizado</h3>
+                    <PhTrophy :size="32" />
+                  </v-card-text>
+                  <v-card-text class="d-flex justify-center align-center">
+                    <h2>{{ getCompletedStatus }}</h2>
+                  </v-card-text>
+                </v-card>
+              </v-card>
+            </v-sheet>
+            <v-row>
+              <v-col class="d-flex justify-end pb-0">
+                <v-dialog max-width="550px">
+                  <template v-slot:activator="{ props: activatorProps }">
+                    <v-btn
+                      class="d-flex ga-2"
+                      :style="{ background: '#fff', color: '#874b91' }"
+                      text="Adicionar nova tarefa "
+                      v-bind="activatorProps"
+                      @click="() => {}"
+                    >
+                    </v-btn>
+                  </template>
+                  <template v-slot:default="{ isActive }">
+                    <v-col>
+                      <v-card>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn variant="plain" text="Fechar" @click="isActive.value = false"></v-btn>
+                        </v-card-actions>
+                        <v-card-title> Adicionar nova tarefa </v-card-title>
+                        <v-card-text>
+                          Dentro de cada tarefa, poderemos adicionar steps, que serão checkbox tickadas ao longo da jornada de
+                          desenvolvimento.
+                        </v-card-text>
+                      </v-card>
+                      <v-card>
+                        <v-form @submit.prevent="() => addNewObject()" class="pa-6">
+                          <v-select v-model="title.value" :items="title" label="Selecione o tipo de tarefa" required></v-select>
+                          <v-select v-model="color.value" :items="color" label="Selecione a cor do card" disabled></v-select>
+                          <v-text-field v-model="name_object" label="Titulo da tarefa" required></v-text-field>
+                          <v-text-field v-model="detail_object" label="Descreva a tarefa" required></v-text-field>
+                          <v-checkbox v-model="priority" label="Prioridade para concluir essa tarefa?"></v-checkbox>
+                          <v-select v-model="step.value" :items="step" label="Quantidade de steps"></v-select>
+                          <small>Não é obrigatório selecionar á quantidade de steps.</small>
+                          <small>
+                            a quantidade de steps criara de forma automatica a caixa de steps, após a execução da função passar
+                            throw new error</small
+                          >
+                          <v-card-actions>
+                            <v-row class="d-flex justify-end">
+                              <v-btn variant="plain" text="Cancelar" @click="isActive.value = false"></v-btn>
+                              <v-btn
+                                :style="{ background: '#874b91', color: '#fff' }"
+                                variant="tonal"
+                                text="Confirmar"
+                                type="submit"
+                              ></v-btn>
+                            </v-row>
+                          </v-card-actions>
+                        </v-form>
+                      </v-card>
+                    </v-col>
+                  </template>
+                </v-dialog>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-space-between mt-0">
               <v-col class="d-flex flex-column h-auto">
                 <ul
                   v-if="any_task.length > 0"
@@ -156,7 +162,7 @@
                     <small>Etapas: {{ object.step }}</small>
                   </li>
                   <li>
-                    <small>{{ object.createdAt }}</small>
+                    <small>Data de criação: {{ object.createdAt }}</small>
                   </li>
                   <v-divider></v-divider>
                   <li class="d-flex justify-end ga-3">
@@ -394,6 +400,12 @@ const newTask = () => {
   }) // ToastOptions
   return { newTask }
 }
+const startTask = (title) => {
+  toast.success(`Tarefa "${title}" iniciada`, {
+    autoClose: 3000,
+  }) // ToastOptions
+  return { startTask }
+}
 const deleteSuccess = () => {
   toast.success('Tarefa removida com sucesso', {
     autoClose: 1500,
@@ -420,6 +432,7 @@ const addNewObject = async () => {
   try {
     newTask()
     const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject)
+    socket.emit('new-task', response.data)
     title.value.value = ''
     name_object.value = ''
     detail_object.value = ''
@@ -476,16 +489,14 @@ const nextStepTask = async (id) => {
       status: 'in-progress',
     })
     socket.emit('task-updated', response.data)
-    console.log(`Next step column => ${id}`)
+    startTask()
   } catch (err) {
     console.log(err)
   }
 }
-
 const removeTask = async (id) => {
   try {
     const request = await axios.delete(`${DATABASE_URL}${PORT}/tasks/${id}`)
-    console.log(`Status: ${request.status}`)
     deleteSuccess()
     socket.on('request', (deletedTask) => {
       // Remover a tarefa excluída da lista
@@ -500,7 +511,10 @@ onMounted(() => {
   socket.on('connect', () => {
     console.log(`Conectado com ID: ${socket.id}`)
   })
-
+  socket.on('task-created', (newTask) => {
+    object_info.value.push(newTask)
+    getObject()
+  })
   socket.on('task-updated', (updatedTask) => {
     console.log('Tarefa atualizada:', updatedTask)
     // Atualizar a tarefa na lista com base no ID
@@ -512,7 +526,6 @@ onMounted(() => {
     if (indexPr !== -1) {
       in_progress_task.value[indexPr] = updatedTask // Substituir a tarefa existente pela atualizada
     }
-
     const indexC = in_progress_task.value.findIndex((task) => task.id === updatedTask.id)
     if (indexC !== -1) {
       completed_task.value[indexC] = updatedTask // Substituir a tarefa existente pela atualizada
@@ -521,14 +534,10 @@ onMounted(() => {
     // Recebe uma nova tarefa
     getObject()
   })
-
   socket.on('task-deleted', (deletedTask) => {
-    console.log('Tarefa excluída: ', deletedTask.id)
     object_info.value = object_info.value.filter((task) => task.id !== deletedTask.id)
-
     getObject()
   })
-
   getUser()
   getObject()
 })
@@ -543,11 +552,6 @@ onBeforeUnmount(() => {
   height: 100%;
   background-size: contain;
   background-position: 0%;
-}
-div.header {
-  display: flex;
-  justify-content: end;
-  align-items: center;
 }
 span.status {
   height: 10px;
