@@ -72,7 +72,6 @@ const notifyAccess = () => {
   }) // ToastOptions
   return { notifyAccess }
 }
-
 const invalid = () => {
   toast.error('Usuário ou senha inválidos!', {
     autoClose: 2200,
@@ -93,23 +92,30 @@ const userLogin = async () => {
       nickname: user_nickname.value,
       password: user_password.value,
     })
+    const { token } = response.data // token desestruturado vindo do backend
     if (response) {
       notifyAccess()
+      //no navegador verificar no inspecionar/aplicativo/armazenamento-local
+      //lá da pra saber se os dados estão salvos ou nao
+      localStorage.setItem('authToken', token) // armazena o token do localStorage
       setTimeout(() => {
         window.location.replace('/dashboard')
-      }, 1200)
+      }, 1000)
       return console.log(`Acesso liberado!`)
     }
+    if (!token) {
+      setTimeout(() => {
+        window.location.replace('/dashboard')
+      }, 1000)
+    }
+    return
   } catch (err) {
-    console.log(`${user_nickname.value} | ${user_password.value}`)
-    console.log(`Usuário ou senha inválidos!`)
+    console.log(err)
     invalid()
   }
 }
-
 onMounted(() => {})
 </script>
-
 <style scoped>
 .layout[data-v-c9bfb757] {
   height: 100%;
@@ -118,9 +124,6 @@ onMounted(() => {})
 }
 .v-btn.v-btn--density-default {
   position: relative;
-}
-form {
-  max-width: 350px;
 }
 ul {
   list-style: none;

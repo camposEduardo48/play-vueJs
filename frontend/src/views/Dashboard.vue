@@ -703,6 +703,10 @@ onMounted(() => {
     object_info.value = object_info.value.filter((task) => task.id !== deletedTask.id)
     getObject()
   })
+  socket.on('refresh-token', (token) => {
+    console.log('desconectado token')
+    location.reload(token)
+  } )
 })
 onBeforeUnmount(() => {
   // Desconectar o socket quando o componente for destruído
