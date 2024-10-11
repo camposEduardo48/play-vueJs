@@ -1,6 +1,7 @@
 <template>
   <footer>
-    <slot>sopmac &copy; {{ new Date().getUTCFullYear() }}</slot>
+    <div>sopmac &copy; {{ new Date().getUTCFullYear() }}</div>
+    <slot></slot>
   </footer>
 </template>
 <script setup></script>

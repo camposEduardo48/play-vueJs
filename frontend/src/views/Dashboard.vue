@@ -113,6 +113,7 @@
                           <v-textarea v-model="detail_object" label="Descreva a tarefa" required></v-textarea>
                           <v-checkbox v-model="priority" label="Prioridade para concluir essa tarefa?"></v-checkbox>
                           <v-select v-model="step.value" :items="step" label="Quantidade de steps"></v-select>
+                          <!-- verificar o como o step é enviado caso o client nao selecione o valor -->
                           <small>Não é obrigatório selecionar á quantidade de steps.</small>
                           <small>
                             a quantidade de steps criara de forma automatica a caixa de steps, após a execução da função passar
@@ -164,19 +165,13 @@
                     <v-card-text>{{ object.description }}</v-card-text>
                   </li>
                   <li v-if="object.status === 'any'">
-                    <small :style="{ color: 'grey' }">Não iniciado</small>
-                  </li>
-                  <li v-if="object.status === 'in-progress'">
-                    <small :style="{ color: '#000' }">Em andamento</small>
-                  </li>
-                  <li v-if="object.status === 'complete'">
-                    <small :style="{ color: 'green' }">Não iniciado</small>
+                    <small :style="{fontWeight: 'bold' }">Não iniciado 😴</small>
                   </li>
                   <li>
                     <small>Etapas: {{ object.step }}</small>
                   </li>
                   <li>
-                    <small>Data de criação: {{ object.createdAt }}</small>
+                    <small>Criado em: {{ dayjs(object.createdAt).format('DD/MM/YYYY HH:mm') }}</small>
                   </li>
                   <v-divider></v-divider>
                   <li class="d-flex justify-end ga-3">
@@ -245,9 +240,9 @@
                     <div>
                       <b>{{ object.title }}</b>
                     </div>
-                    <div :style="{ cursor: 'pointer' }">
+                    <div @click="() => removeFavorite(object.id)" :style="{ cursor: 'pointer' }">
                       <p class="emoji">
-                        {{ object.priority === true ? '⭐' : null }}
+                        {{ object.priority === true ? '⭐' : ' ' }}
                       </p>
                     </div>
                   </li>
@@ -261,20 +256,14 @@
                   <li>
                     <v-card-text>{{ object.description }}</v-card-text>
                   </li>
-                  <li v-if="object.status === 'any'">
-                    <small :style="{ color: 'grey' }">Não iniciado</small>
-                  </li>
                   <li v-if="object.status === 'in-progress'">
-                    <small :style="{ color: '#000' }">Em andamento</small>
-                  </li>
-                  <li v-if="object.status === 'complete'">
-                    <small :style="{ color: 'green' }">Não iniciado</small>
+                    <small :style="{ color: '#000', fontWeight: 'bold' }">Em andamento 🏃🏿</small>
                   </li>
                   <li>
                     <small>Etapas: {{ object.step }}</small>
                   </li>
                   <li>
-                    <small>{{ object.createdAt }}</small>
+                    <small>Iniciado em: {{ dayjs(object.updatedAt).format('DD/MM/YYYY HH:mm') }}</small>
                   </li>
                   <v-divider></v-divider>
                   <li class="d-flex justify-end ga-3">
@@ -314,7 +303,7 @@
                             <v-col>
                               <v-row class="d-flex justify-end pa-4">
                                 <v-btn variant="plain" @click="isActive.value = false">Cancelar</v-btn>
-                                <v-btn variant="tonal" @click="() => toCompleteTask(object.id)">Confirmar</v-btn>
+                                <v-btn variant="tonal" @click="() => finishTask(object.id)">Confirmar</v-btn>
                               </v-row>
                             </v-col>
                           </v-sheet>
@@ -357,14 +346,15 @@
                     <v-btn @click="() => editTask(object.id)" disabled>
                       <PhPencil :size="22" />
                     </v-btn>
-                    <v-btn @click="() => editTask(object.id)">
+                    <v-btn v-if="object.priority === false" @click="() => setFavorite(object.id)">
+                      <!-- criar logica para favoritar task -->
+                      <PhStar :size="22" />
+                    </v-btn>
+                    <v-btn v-if="object.priority === true" @click="() => ''" disabled>
                       <!-- criar logica para favoritar task -->
                       <PhStar :size="22" />
                     </v-btn>
                     <!-- só podera finalizar a task após completar todas as tasks -->
-                    <v-btn @click="() => nextStepTask(object.id)" disabled>
-                      <PhCheckCircle :size="22" />
-                    </v-btn>
                   </li>
                 </ul>
                 <ul v-else class="pa-4">
@@ -390,31 +380,27 @@
                     <div v-if="object.status === 'completed'" :style="{ cursor: 'pointer' }">
                       <PhCheckCircle color="green" :size="22" />
                     </div>
-                  </li>
-                  <li>
-                    <small>{{ object.systemOption }}</small>
-                  </li>
-                  <v-divider></v-divider>
-                  <li>
-                    <small>{{ object.author }}</small>
-                  </li>
-                  <li>
-                    <v-card-text>{{ object.description }}</v-card-text>
-                  </li>
-                  <li v-if="object.status === 'any'">
-                    <small :style="{ color: 'grey' }">Não iniciado</small>
-                  </li>
-                  <li v-if="object.status === 'in-progress'">
-                    <small :style="{ color: '#000' }">Em andamento</small>
+                    </li>
+                    <li>
+                      <small>{{ object.systemOption }}</small>
+                    </li>
+                    <v-divider></v-divider>
+                    <li v-if="object.status != 'completed' ">
+                      <li>
+                      <small>{{ object.author }}</small>
+                    </li>
+                    <li>
+                      <small>Etapas: {{ object.step }}</small>
+                    </li>
+                    <li>
+                      <v-card-text>{{ object.description }}</v-card-text>
+                    </li>
+                    <li>
+                      <small>Finalizado em: {{ dayjs(object.updatedAt).format('DD/MM/YYYY HH:mm') }}</small>
+                    </li>
                   </li>
                   <li v-if="object.status === 'completed'">
-                    <small :style="{ color: 'green' }">Finalizado</small>
-                  </li>
-                  <li>
-                    <small>Etapas: {{ object.step }}</small>
-                  </li>
-                  <li>
-                    <small>{{ object.createdAt }}</small>
+                    <small :style="{ color: 'green', fontWeight: 'bold' }">Finalizado ✅</small>
                   </li>
                   <li class="d-flex justify-end ga-3">
                     <v-btn @click="() => ''" disabled>
@@ -440,8 +426,20 @@
       </v-col>
     </Container>
   </Layout>
+  <Footer>
+      <v-col>
+        <v-row class='d-flex justify-end pr-5 position-absolute'>
+          <v-sheet :style="{position: 'fixed', right: '20px', bottom: '20px'}">
+              <v-btn @click="() => {}" :style="{height: '60px', width:'auto'}" elevation='20'>
+                <PhStar :size="30" />
+              </v-btn>
+          </v-sheet>
+        </v-row>
+      </v-col>
+  </Footer>
 </template>
 <script setup>
+import Footer from '@/components/footer/Footer.vue'
 import {
   PhCheckCircle,
   PhClock,
@@ -456,10 +454,14 @@ import {
   PhTrophy,
 } from '@phosphor-icons/vue'
 import axios from 'axios'
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
 import { io } from 'socket.io-client'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+
+dayjs.locale('pt-br')
 
 const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PORT = Number(import.meta.env.VITE_PORT)
@@ -480,36 +482,29 @@ const getAnyStatus = ref('')
 const getInProgressStatus = ref('')
 const getCompletedStatus = ref('')
 const priority = ref(false)
-const date = ref('')
-const hours = ref('')
 
 const color = ref(['lightSkyBlue', 'khaki', 'lightCoral', 'lightGreen'])
 
-const money = 3456.789
-const userMoney = 2324.8754
+const money = 48
+const userMoney = 0
 const resMoney = Number(money + userMoney)
 
 const intlMoneyBrl = ref()
+// const realMoney = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(resMoney)
 const realMoney = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(resMoney)
 intlMoneyBrl.value = String(realMoney)
-
-// const editTask = async (id) => {
-//   try {
-//     const request = await axios.patch(`${DATABASE_URL}/list/${id}`, {
-//       // alterar o status da task e mover parar a próxima coluna
-//     })
-//     console.log(`Edit the task => ${id}`)
-//     return //response
-//   } catch (err) {
-//     console.log(err)
-//   }
-// }
 
 const newItem = () => {
   toast.success('Adicionado com sucesso', {
     autoClose: 2500,
   }) // ToastOptions
   return { newItem }
+}
+const taskFinished = () => {
+  toast.success('Tarefa finalizada ✅', {
+    autoClose: 2500,
+  }) // ToastOptions
+  return { taskFinished }
 }
 const newTask = () => {
   toast.success('Nova tarefa adicionada', {
@@ -536,6 +531,12 @@ const invalid = () => {
   }) // ToastOptions
   return { invalid }
 }
+const someError = () => {
+  toast.error('Ops, algo deu errado!', {
+    autoClose: 3000,
+  }) // ToastOptions
+  return { someError }
+}
 
 const addNewObject = async () => {
   const modelObject = {
@@ -552,18 +553,15 @@ const addNewObject = async () => {
     title.value.value = ''
     name_object.value = ''
     detail_object.value = ''
-    priority.value = ''
-    color.value.value = ''
-    step.value.value = ''
-    // refresh
-    console.log(response)
+    priority.value
+    color.value.value
+    step.value
+
     socket.emit('new-task', response.data)
   } catch (err) {
+    someError()
     console.log(`algo deu errado: ${err}`)
   }
-}
-const toCompleteTask = () => {
-  console.log('if all task are complete, done the task')
 }
 const getObject = async () => {
   try {
@@ -589,6 +587,7 @@ const getObject = async () => {
 
     socket.emit('get-tasks', request)
   } catch (err) {
+    someError()
     console.log(`algo deu errado: ${err}`)
   }
 }
@@ -600,18 +599,57 @@ const getUser = async () => {
     const nick = datas.map((item) => item.nickname)
     user_nickname.value = nick[0]
   } catch (err) {
+    someError()
     console.log(`algo deu errado: ${err}`)
   }
 }
 const nextStepTask = async (id) => {
   // só concluir a task appós finalizar todos os steps de cada task
   try {
-    const response = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
+    const response = await axios.put(`${DATABASE_URL}${PORT}/tasks/${id}`, {
       status: 'in-progress',
     })
     socket.emit('task-updated', response.data)
     startTask()
   } catch (err) {
+    someError()
+    console.log(err)
+  }
+}
+const finishTask = async (id) => {
+  // só concluir a task appós finalizar todos os steps de cada task
+  try {
+    const response = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
+      status: 'completed',
+    })
+    socket.emit('task-updated', response.data)
+    taskFinished()
+  } catch (err) {
+    someError()
+    console.log(err)
+  }
+}
+const setFavorite = async (id) => {
+  priority.value = true
+  try {
+    const response = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
+      priority: priority.value,
+    })
+    socket.emit('task-updated', response.data)
+  } catch (err) {
+    someError()
+    console.log(err)
+  }
+}
+const removeFavorite = async (id) => {
+  priority.value = false
+  try {
+    const response = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
+      priority: priority.value,
+    })
+    socket.emit('task-updated', response.data)
+  } catch (err) {
+    someError()
     console.log(err)
   }
 }
@@ -625,6 +663,7 @@ const removeTask = async (id) => {
     })
     return request
   } catch (err) {
+    someError()
     console.log(err)
   }
 }
@@ -649,12 +688,15 @@ onMounted(() => {
     if (indexPr !== -1) {
       in_progress_task.value[indexPr] = updatedTask // Substituir a tarefa existente pela atualizada
     }
-    const indexC = in_progress_task.value.findIndex((task) => task.id === updatedTask.id)
-    if (indexC !== -1) {
-      completed_task.value[indexC] = updatedTask // Substituir a tarefa existente pela atualizada
-    }
     // '' dentro das aspas deve-se definir o nome dos eventos que serao chamados entre front e back
     // Recebe uma nova tarefa
+    getObject()
+  })
+  socket.on('task-finished', (finishTask) => {
+    const indexC = completed_task.value.findIndex((task) => task.id === finishTask.id)
+    if (indexC !== -1) {
+      completed_task.value[indexC] = finishTask // Substituir a tarefa existente pela atualizada
+    }
     getObject()
   })
   socket.on('task-deleted', (deletedTask) => {
@@ -695,7 +737,6 @@ span.status {
 }
 ul {
   display: flex;
-  cursor: pointer;
   flex-direction: column;
   gap: 0.5rem;
   justify-content: center;
