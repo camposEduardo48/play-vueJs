@@ -103,12 +103,6 @@ const userLogin = async () => {
       }, 1000)
       return console.log(`Acesso liberado!`)
     }
-    if (!token) {
-      setTimeout(() => {
-        window.location.replace('/dashboard')
-      }, 1000)
-    }
-    return
   } catch (err) {
     console.log(err)
     invalid()

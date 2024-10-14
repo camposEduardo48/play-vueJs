@@ -491,7 +491,6 @@ const getAnyStatus = ref('')
 const getInProgressStatus = ref('')
 const getCompletedStatus = ref('')
 const priority = ref(false)
-
 const color = ref(['lightSkyBlue', 'khaki', 'lightCoral', 'lightGreen'])
 
 const money = 48
@@ -609,12 +608,19 @@ const getUser = async () => {
     user_nickname.value = nick[0]
     const photo = datas.map(item => item.img_photo)
     profileImg.value = photo
-    console.log(photo)
-
   } catch (err) {
     someError()
     console.log(`algo deu errado: ${err}`)
   }
+}
+const verifyToken = () => {
+  localStorage.getItem('authToken')
+  console.log(token)
+  if (!token) {
+    localStorage.removeItem('authToken')
+    window.location.replace('/')
+  }
+  
 }
 const nextStepTask = async (id) => {
   // só concluir a task appós finalizar todos os steps de cada task
@@ -687,6 +693,7 @@ onMounted(() => {
   socket.on('connect', () => {
     console.log(`Conectado com ID: ${socket.id}`)
   })
+  
   socket.on('task-created', (newTask) => {
     object_info.value.push(newTask)
     getObject()
@@ -716,10 +723,7 @@ onMounted(() => {
     object_info.value = object_info.value.filter((task) => task.id !== deletedTask.id)
     getObject()
   })
-  socket.on('refresh-token', (token) => {
-    console.log('desconectado token')
-    location.reload(token)
-  } )
+
 })
 onBeforeUnmount(() => {
   // Desconectar o socket quando o componente for destruído
