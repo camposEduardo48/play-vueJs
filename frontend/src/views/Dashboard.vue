@@ -5,15 +5,23 @@
         <v-row>
           <v-col class="d-flex flex-column ga-4 pb-10">
             <v-card elevation="10">
-              <v-card-text class="d-flex align-center ga-2">
-                <span>
+              <v-card-text>
+                <section class='d-flex align-center ga-2'>
+                  <div>
+                    <img :src="profileImg" alt="">
+                  </div>
                   <h2>{{ user_nickname }}</h2>
+                  <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
+                </section>
                   <!-- mostrar o nome do usuario logado e autenticado -->
-                  <h3>{{ intlMoneyBrl }}</h3>
-                </span>
-                <span class="status" :style="{ background: status_test ? '#00ff00' : 'red' }"></span>
-                <small :style="{ color: 'silver' }">{{ 'Aplicar websockets' }}</small>
-                <small>{{ 'Aplicar JWT no login' }}</small>
+                  <!-- <span >
+                    <h3>{{ intlMoneyBrl }}</h3>
+                  </span> -->
+                <div>
+                  <small :style="{ color: 'silver' }">{{ 'Aplicar websockets' }}</small>
+                  <small :style="{ color: 'silver' }">{{ 'Aplicar JWT no login' }}</small>
+                  <small :style="{ color: '#000' }">{{ 'Mostrar dia da semana e data no cabeçalho' }}</small>
+                </div>
               </v-card-text>
               <v-row>
                 <v-col>
@@ -474,6 +482,7 @@ const any_task = ref([])
 const in_progress_task = ref([])
 const completed_task = ref([])
 const user_nickname = ref('')
+const profileImg = ref()
 const title = ref(['ZapYou', 'ZapYou 2.0', 'Sisconep', 'KENGOO'])
 const name_object = ref('')
 const detail_object = ref('')
@@ -598,6 +607,10 @@ const getUser = async () => {
     const datas = user_info.value
     const nick = datas.map((item) => item.nickname)
     user_nickname.value = nick[0]
+    const photo = datas.map(item => item.img_photo)
+    profileImg.value = photo
+    console.log(photo)
+
   } catch (err) {
     someError()
     console.log(`algo deu errado: ${err}`)
@@ -725,6 +738,12 @@ span.status {
   width: 10px;
   border-radius: 100%;
   background: silver;
+}
+img {
+  height: 65px;
+  width: 65px;
+  background-position: center;
+  background-size: contain;
 }
 .v-sheet {
   background: transparent;
