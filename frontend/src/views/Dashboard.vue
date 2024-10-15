@@ -21,6 +21,7 @@
                   <small :style="{ color: 'silver' }">{{ 'Aplicar websockets' }}</small>
                   <small :style="{ color: 'silver' }">{{ 'Aplicar JWT no login' }}</small>
                   <small :style="{ color: '#000' }">{{ 'Mostrar dia da semana e data no cabeçalho' }}</small>
+                  <small :style="{ color: '#000' }">{{ 'Validar o token, para quando o usuário nao estiver cadastrado ele ser redirecionado para a pagina de login' }}</small>
                 </div>
               </v-card-text>
               <v-row>
@@ -492,6 +493,7 @@ const getInProgressStatus = ref('')
 const getCompletedStatus = ref('')
 const priority = ref(false)
 const color = ref(['lightSkyBlue', 'khaki', 'lightCoral', 'lightGreen'])
+const token = ref('')
 
 const money = 48
 const userMoney = 0
@@ -604,6 +606,8 @@ const getUser = async () => {
     const request = await axios.get(`${DATABASE_URL}${PORT}/users`)
     user_info.value = request.data
     const datas = user_info.value
+    
+    // os dados exibidos devem estar de acordo com os dados do usuario que fez login
     const nick = datas.map((item) => item.nickname)
     user_nickname.value = nick[0]
     const photo = datas.map(item => item.img_photo)
@@ -614,13 +618,15 @@ const getUser = async () => {
   }
 }
 const verifyToken = () => {
-  localStorage.getItem('authToken')
+  setInterval(() => {
+    token.value = localStorage.getItem('authToken')
+  }, 10000)
   console.log(token)
   if (!token) {
     localStorage.removeItem('authToken')
     window.location.replace('/')
   }
-  
+  socket.emit('token-validation', token.value)
 }
 const nextStepTask = async (id) => {
   // só concluir a task appós finalizar todos os steps de cada task
@@ -687,6 +693,7 @@ const removeTask = async (id) => {
   }
 }
 onMounted(() => {
+  verifyToken()
   getUser()
   getObject()
 
@@ -710,6 +717,7 @@ onMounted(() => {
     }
     // '' dentro das aspas deve-se definir o nome dos eventos que serao chamados entre front e back
     // Recebe uma nova tarefa
+    object_info.value.unshift(updatedTask) // ideia: adicionar os itens atualizados ao topo da lista * VERIFICAR *
     getObject()
   })
   socket.on('task-finished', (finishTask) => {
@@ -728,7 +736,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // Desconectar o socket quando o componente for destruído
   socket.disconnect()
-  console.log('Socket desconectado')
+  console.log(`Socket desconectado => ${socket.id}`)
 })
 </script>
 <style scoped>

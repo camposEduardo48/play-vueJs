@@ -8,7 +8,7 @@
     <Container>
       <v-row>
         <v-col md="12" sm="12" class="d-flex justify-center align-center h-100 mt-10">
-          <v-card class="h-auto w-25" elevation="20">
+          <v-card width="400px" elevation="20">
             <v-row>
               <v-col class="d-flex justify-center">
                 <v-form class="d-flex flex-column h-auto w-100 ma-6 pa-2 ga-4" elevation="6" @submit.prevent="() => userLogin()">
@@ -34,7 +34,92 @@
                     >Quantidade de caracteres inválidos!</small
                   >
                   <v-row>
-                    <v-btn type="submit" class="mt-6 mb-8" block>Enviar</v-btn>
+                    <v-btn type="submit" class="mt-6 mb-8" block>Entrar</v-btn>
+                  </v-row>
+                  <v-row>
+                    <v-dialog max-width="500px">
+                      <template v-slot:activator="{ props: activatorProps }">
+                        <v-sheet class="d-flex flex-column w-100">
+                          <div class="d-flex justify-center mb-4">
+                            <small>Não possui cadastro?</small>
+                          </div>
+                          <div class="d-flex justify-center">
+                            <v-btn :style="{ fontSize: '8pt' }" v-bind="activatorProps" variant="plain">Cadastrar-se</v-btn>
+                          </div>
+                        </v-sheet>
+                      </template>
+                      <template v-slot:default="{ isActive }">
+                        <v-card>
+                          <v-card-text>
+                            <h3>Criar cadastro</h3>
+                            <small>Preencha os campos abaixo com as suas informações pessoais legítimas</small>
+                          </v-card-text>
+                          <v-divider></v-divider>
+                          <v-sheet>
+                            <v-card-text>
+                              <v-form class="d-flex flex-column justify-center w-100" @submit.prevent="() => newUserRegister()">
+                                <v-text-field
+                                  variant="outlined"
+                                  type="text"
+                                  v-model="newFirstName"
+                                  label="Digite seu primeiro nome"
+                                  required
+                                ></v-text-field>
+                                <v-text-field
+                                  variant="outlined"
+                                  type="text"
+                                  v-model="newLastName"
+                                  label="Digite seu sobrenome"
+                                  required
+                                ></v-text-field>
+                                <v-text-field
+                                  variant="outlined"
+                                  type="text"
+                                  v-model="newNickName"
+                                  label="Digite seu apelido"
+                                  required
+                                ></v-text-field>
+                                <v-text-field
+                                  variant="outlined"
+                                  type="email"
+                                  v-model="newEmail"
+                                  label="Digite um endereço de email"
+                                  required
+                                ></v-text-field>
+                                <v-card-text>Defina uma senha na qual usará para se logar futuramente</v-card-text>
+                                <v-text-field
+                                  variant="outlined"
+                                  type="password"
+                                  v-model="newPassword"
+                                  label="Digite uma palavra chave"
+                                  required
+                                ></v-text-field>
+                                <v-text-field
+                                  variant="outlined"
+                                  type="password"
+                                  v-model="repeatPassword"
+                                  label="Digite a mesma palavra chave novamente"
+                                  required
+                                ></v-text-field>
+
+                                <v-checkbox
+                                  v-model="agreePermissions"
+                                  label="Você concorda com os termos e condições legais da Sopmac?"
+                                  color="#9a67a2"
+                                  required
+                                ></v-checkbox>
+                                <v-sheet>
+                                  <v-row class="d-flex justify-end pa-4 ga-4 ma-2">
+                                    <v-btn variant="plain" @click="isActive.value = false">Cancelar</v-btn>
+                                    <v-btn variant="tonal" type="submit">Cadastrar</v-btn>
+                                  </v-row>
+                                </v-sheet>
+                              </v-form>
+                            </v-card-text>
+                          </v-sheet>
+                        </v-card>
+                      </template>
+                    </v-dialog>
                   </v-row>
                 </v-form>
               </v-col>
@@ -59,6 +144,15 @@ import background from './../assets/bg-login.svg'
 
 const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PORT = Number(import.meta.env.VITE_PORT)
+
+const newFirstName = ref('')
+const newLastName = ref('')
+const newNickName = ref('')
+const newEmail = ref('')
+const newPassword = ref('')
+const repeatPassword = ref('')
+const agreePermissions = ref(false) // verificar a entrada desse dado no banco de dados
+
 const img_background = background
 
 const user_nickname = ref('')
@@ -69,6 +163,12 @@ const show_users = ref([])
 const notifyAccess = () => {
   toast.success(`Bem vindo de volta, ${user_nickname.value}!`, {
     autoClose: 1500,
+  }) // ToastOptions
+  return { notifyAccess }
+}
+const registered = () => {
+  toast.success(`Cadastro realizado com sucesso!`, {
+    autoClose: 2000,
   }) // ToastOptions
   return { notifyAccess }
 }
@@ -86,10 +186,33 @@ const problem = () => {
   return { problem }
 }
 
+const newUserRegister = async () => {
+  const newUser = {
+    firstName: newFirstName.value,
+    lastName: newLastName.value,
+    nickname: newNickName.value,
+    email: newEmail.value,
+    password: newPassword.value,
+    agreePermissions: agreePermissions.value,
+  }
+  try {
+    registered()
+    const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser)
+    newFirstName.value = ''
+    newLastName.value = ''
+    newNickName.value = ''
+    newEmail.value = ''
+    newPassword.value = ''
+    agreePermissions.value = false
+  } catch (err) {
+    console.log(err)
+  }
+}
 const userLogin = async () => {
   try {
     const response = await axios.post(`${DATABASE_URL}${PORT}/users`, {
       nickname: user_nickname.value,
+      // email:
       password: user_password.value,
     })
     const { token } = response.data // token desestruturado vindo do backend
@@ -97,10 +220,10 @@ const userLogin = async () => {
       notifyAccess()
       //no navegador verificar no inspecionar/aplicativo/armazenamento-local
       //lá da pra saber se os dados estão salvos ou nao
-      localStorage.setItem('authToken', token) // armazena o token do localStorage
       setTimeout(() => {
         window.location.replace('/dashboard')
       }, 1000)
+      localStorage.setItem('authToken', token) // armazena o token do localStorage
       return console.log(`Acesso liberado!`)
     }
   } catch (err) {
