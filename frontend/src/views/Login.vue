@@ -152,6 +152,7 @@ const newEmail = ref('')
 const newPassword = ref('')
 const repeatPassword = ref('')
 const agreePermissions = ref(false) // verificar a entrada desse dado no banco de dados
+const token = localStorage.getItem('authToken')
 
 const img_background = background
 
@@ -197,7 +198,11 @@ const newUserRegister = async () => {
   }
   try {
     registered()
-    const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser)
+    const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     newFirstName.value = ''
     newLastName.value = ''
     newNickName.value = ''
@@ -212,7 +217,6 @@ const userLogin = async () => {
   try {
     const response = await axios.post(`${DATABASE_URL}${PORT}/users`, {
       nickname: user_nickname.value,
-      // email:
       password: user_password.value,
     })
     const { token } = response.data // token desestruturado vindo do backend
@@ -221,8 +225,8 @@ const userLogin = async () => {
       //no navegador verificar no inspecionar/aplicativo/armazenamento-local
       //lá da pra saber se os dados estão salvos ou nao
       setTimeout(() => {
-        window.location.replace('/dashboard')
-      }, 1000)
+        location.replace('/dashboard')
+      }, 500)
       localStorage.setItem('authToken', token) // armazena o token do localStorage
       return console.log(`Acesso liberado!`)
     }

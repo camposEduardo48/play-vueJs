@@ -18,10 +18,8 @@
                     <h3>{{ intlMoneyBrl }}</h3>
                   </span> -->
                 <div>
-                  <small :style="{ color: 'silver' }">{{ 'Aplicar websockets' }}</small>
-                  <small :style="{ color: 'silver' }">{{ 'Aplicar JWT no login' }}</small>
+                  <small :style="{ color: 'silver' }">{{ 'Corrigir bug no POST task' }}</small>
                   <small :style="{ color: '#000' }">{{ 'Mostrar dia da semana e data no cabeçalho' }}</small>
-                  <small :style="{ color: '#000' }">{{ 'Validar o token, para quando o usuário nao estiver cadastrado ele ser redirecionado para a pagina de login' }}</small>
                 </div>
               </v-card-text>
               <v-row>
@@ -260,7 +258,7 @@
                   </li>
                   <v-divider></v-divider>
                   <li>
-                    <small>{{ object.author }}</small>
+                    <small>{{ object.userId }}</small>
                   </li>
                   <li>
                     <v-card-text>{{ object.description }}</v-card-text>
@@ -439,8 +437,8 @@
       <v-col>
         <v-row class='d-flex justify-end pr-5 position-absolute'>
           <v-sheet :style="{position: 'fixed', right: '20px', bottom: '20px'}">
-              <v-btn @click="() => {}" :style="{height: '60px', width:'auto'}" elevation='20'>
-                <PhStar :size="30" />
+              <v-btn @click="() => signOut()" :style="{height: '60px', width:'auto'}" elevation='20'>
+                <PhSignOut :size="32" />
               </v-btn>
           </v-sheet>
         </v-row>
@@ -458,6 +456,7 @@ import {
   PhPencil,
   PhPersonSimpleRun,
   PhPlay,
+  PhSignOut,
   PhStar,
   PhTrash,
   PhTrophy,
@@ -465,6 +464,7 @@ import {
 import axios from 'axios'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
+import { jwtDecode } from 'jwt-decode'
 import { io } from 'socket.io-client'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
@@ -491,9 +491,10 @@ const filterStatus = ref('')
 const getAnyStatus = ref('')
 const getInProgressStatus = ref('')
 const getCompletedStatus = ref('')
-const priority = ref(false)
+const priority = ref()
 const color = ref(['lightSkyBlue', 'khaki', 'lightCoral', 'lightGreen'])
-const token = ref('')
+const items = ref([])
+const token = localStorage.getItem('authToken')
 
 const money = 48
 const userMoney = 0
@@ -549,24 +550,30 @@ const someError = () => {
 }
 
 const addNewObject = async () => {
-  const modelObject = {
-    systemOption: title.value.value,
-    title: name_object.value,
-    description: detail_object.value,
-    priority: priority.value,
-    cardColor: color.value.value,
-    step: step.value.value,
-  }
   try {
-    newTask()
-    const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject)
+    const modelObject = {
+      title: name_object.value,
+      systemOption: title.value.value,
+      description: detail_object.value,
+      priority: priority.value,
+      cardColor: color.value.value,
+      step: step.value.value,
+    }
+    const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    console.log(modelObject)
+    
     title.value.value = ''
     name_object.value = ''
     detail_object.value = ''
-    priority.value
+    priority.value = false
     color.value.value
-    step.value
+    step.value = 0 //verificar se está funcionando correto
 
+    newTask()
     socket.emit('new-task', response.data)
   } catch (err) {
     someError()
@@ -575,7 +582,11 @@ const addNewObject = async () => {
 }
 const getObject = async () => {
   try {
-    const request = await axios.get(`${DATABASE_URL}${PORT}/tasks`)
+    const request = await axios.get(`${DATABASE_URL}${PORT}/tasks`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
     object_info.value = request.data
     const object_datas = object_info.value
@@ -601,38 +612,63 @@ const getObject = async () => {
     console.log(`algo deu errado: ${err}`)
   }
 }
+const signOut = async () => {
+  try {
+    localStorage.removeItem('authToken')
+    location.replace("/")
+  } catch (err) {
+    console.log(err)
+  }
+}
+const verifyToken = (token) => {
+  try {
+    const decoded = jwtDecode(token)
+    if (decoded.exp) {
+      const expiration = dayjs.unix(decoded.exp)
+      if (dayjs().isAfter(expiration)) {
+        console.log('Seu token está expirado')
+        return false
+      }
+      return true
+    }
+    return console.log('Token está sem o campo exp')
+
+  } catch (err) {
+    console.log('Erro ao verificar Token: ', err.message)
+    return false
+  }
+}
+if (!verifyToken(token)) {
+  localStorage.removeItem('authToken')
+  location.replace("/")
+}
 const getUser = async () => {
   try {
-    const request = await axios.get(`${DATABASE_URL}${PORT}/users`)
+    const request = await axios.get(`${DATABASE_URL}${PORT}/users`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     user_info.value = request.data
     const datas = user_info.value
-    
     // os dados exibidos devem estar de acordo com os dados do usuario que fez login
-    const nick = datas.map((item) => item.nickname)
-    user_nickname.value = nick[0]
-    const photo = datas.map(item => item.img_photo)
-    profileImg.value = photo
+    user_nickname.value = datas.nickname
+    profileImg.value = datas.img_photo
   } catch (err) {
     someError()
     console.log(`algo deu errado: ${err}`)
   }
 }
-const verifyToken = () => {
-  setInterval(() => {
-    token.value = localStorage.getItem('authToken')
-  }, 10000)
-  console.log(token)
-  if (!token) {
-    localStorage.removeItem('authToken')
-    window.location.replace('/')
-  }
-  socket.emit('token-validation', token.value)
-}
+
 const nextStepTask = async (id) => {
   // só concluir a task appós finalizar todos os steps de cada task
   try {
     const response = await axios.put(`${DATABASE_URL}${PORT}/tasks/${id}`, {
       status: 'in-progress',
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
     socket.emit('task-updated', response.data)
     startTask()
@@ -646,6 +682,10 @@ const finishTask = async (id) => {
   try {
     const response = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
       status: 'completed',
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
     socket.emit('task-updated', response.data)
     taskFinished()
@@ -659,6 +699,10 @@ const setFavorite = async (id) => {
   try {
     const response = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
       priority: priority.value,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
     socket.emit('task-updated', response.data)
   } catch (err) {
@@ -671,6 +715,10 @@ const removeFavorite = async (id) => {
   try {
     const response = await axios.patch(`${DATABASE_URL}${PORT}/tasks/${id}`, {
       priority: priority.value,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
     socket.emit('task-updated', response.data)
   } catch (err) {
@@ -680,7 +728,11 @@ const removeFavorite = async (id) => {
 }
 const removeTask = async (id) => {
   try {
-    const request = await axios.delete(`${DATABASE_URL}${PORT}/tasks/${id}`)
+    const request = await axios.delete(`${DATABASE_URL}${PORT}/tasks/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     deleteSuccess()
     socket.on('request', (deletedTask) => {
       // Remover a tarefa excluída da lista
@@ -693,7 +745,6 @@ const removeTask = async (id) => {
   }
 }
 onMounted(() => {
-  verifyToken()
   getUser()
   getObject()
 
