@@ -167,7 +167,7 @@
                     <small :style="{fontWeight: 'bold' }">Não iniciado 😴</small>
                   </li>
                   <li>
-                    <small>Steps: {{ object.step.length }}</small>
+                    <small>Steps: {{ object.step }}</small>
                   </li>
                   <li>
                     <small>Criado em: {{ dayjs(object.createdAt).format('DD/MM/YYYY HH:mm') }}</small>
@@ -548,6 +548,7 @@ const items = ref([])
 const token = localStorage.getItem('authToken')
 const stepInput = ref(false)
 const stepText = ref('')
+const checkedStep = ref(false)
 
 const money = 48
 const userMoney = 0
@@ -610,7 +611,11 @@ const addNewObject = async () => {
       description: detail_object.value,
       priority: priority.value,
       cardColor: color.value.value,
-      step: step.value.value,
+      step: [{
+        titleStep: stepText.value,
+        descriptionStep: '',
+        checked: checkedStep.value
+      }]
     }
     const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject, {
         headers: {
@@ -624,8 +629,8 @@ const addNewObject = async () => {
     detail_object.value = ''
     priority.value = false
     color.value.value
-    step.value = 0 //verificar se está funcionando correto
-
+    step.value = '' //verificar se está funcionando correto
+    
     newTask()
     socket.emit('new-task', response.data)
   } catch (err) {
@@ -713,8 +718,20 @@ const getUser = async () => {
   }
 }
 
-const addStep = async() => {
-  console.log(stepText.value)
+const addStep = async () => {
+  try {
+    const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, {
+      step: [stepText.value]
+      },
+      {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    console.log(stepText.value)
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 const nextStepTask = async (id) => {
