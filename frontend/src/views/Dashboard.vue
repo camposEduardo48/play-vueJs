@@ -18,7 +18,6 @@
                     <h3>{{ intlMoneyBrl }}</h3>
                   </span> -->
                 <div>
-                  <small :style="{ color: 'silver' }">{{ 'Corrigir bug no POST task' }}</small>
                   <small :style="{ color: '#000' }">{{ 'Mostrar dia da semana e data no cabeçalho' }}</small>
                 </div>
               </v-card-text>
@@ -111,21 +110,14 @@
                           Dentro de cada tarefa, poderemos adicionar steps, que serão checkbox tickadas ao longo da jornada de
                           desenvolvimento.
                         </v-card-text>
-                      </v-card>
-                      <v-card>
                         <v-form @submit.prevent="() => addNewObject()" class="pa-6">
                           <v-select v-model="title.value" :items="title" label="Selecione o tipo de tarefa" required></v-select>
                           <v-select v-model="color.value" :items="color" label="Selecione a cor do card"></v-select>
                           <v-text-field v-model="name_object" label="Titulo da tarefa" required></v-text-field>
                           <v-textarea v-model="detail_object" label="Descreva a tarefa" required></v-textarea>
-                          <v-checkbox v-model="priority" label="Prioridade para concluir essa tarefa?"></v-checkbox>
-                          <v-select v-model="step.value" :items="step" label="Quantidade de steps"></v-select>
+                          <!-- <v-checkbox v-model="priority" label="Prioridade para concluir essa tarefa?"></v-checkbox> -->
+                          <!-- <v-select v-model="step.value" :items="step" label="Quantidade de steps"></v-select> -->
                           <!-- verificar o como o step é enviado caso o client nao selecione o valor -->
-                          <small>Não é obrigatório selecionar á quantidade de steps.</small>
-                          <small>
-                            a quantidade de steps criara de forma automatica a caixa de steps, após a execução da função passar
-                            throw new error</small
-                          >
                           <v-card-actions>
                             <v-row class="d-flex justify-end">
                               <v-btn variant="plain" text="Cancelar" @click="isActive.value = false"></v-btn>
@@ -175,16 +167,75 @@
                     <small :style="{fontWeight: 'bold' }">Não iniciado 😴</small>
                   </li>
                   <li>
-                    <small>Etapas: {{ object.step }}</small>
+                    <small>Steps: {{ object.step.length }}</small>
                   </li>
                   <li>
                     <small>Criado em: {{ dayjs(object.createdAt).format('DD/MM/YYYY HH:mm') }}</small>
                   </li>
                   <v-divider></v-divider>
                   <li class="d-flex justify-end ga-3">
-                    <v-btn @click="() => {}" disabled>
-                      <PhEyeClosed :size="22" />
-                    </v-btn>
+                    <v-dialog max-width='600px'>
+                      <template v-slot:activator="{ props: activatorProps }">
+                        <v-btn
+                          class="d-flex ga-2"
+                          v-bind="activatorProps"
+                          @click="() => {}"
+                        >
+                        <PhPlus :size="22" />
+                        </v-btn>
+                      </template>
+                      <template v-slot:default="{ isActive }">
+                        <v-card>
+                          <v-sheet>
+                            <v-card-text>
+                              <h3>{{  object.title  }}</h3>
+                            </v-card-text>
+                            <v-card-text>{{ object.description }}</v-card-text>
+                            <v-divider></v-divider>
+                            <v-form @submit.prevent="() => addStep()">
+                              <v-sheet v-if="stepInput">
+                                <v-card-actions class="d-flex justify-end">
+                                  <v-btn :style="{ background: '#874b91', color: '#fff' }"
+                                  variant="tonal" text='Incluir steps' @click="stepInput = false"></v-btn>
+                                </v-card-actions>
+                              </v-sheet>
+                              <v-sheet v-if="!stepInput">
+                                <div class="d-flex justify-end">
+                                  <v-btn variant="plain" text='Fechar' @click="stepInput = true"></v-btn>
+                                </div>
+                                <v-card-text>
+                                  <v-text-field type="text" v-model="stepText" label="Insira um step"></v-text-field>
+                                </v-card-text>
+                                <div class="d-flex justify-end mr-3">
+                                  <v-btn :style="{ background: '#874b91', color: '#fff' }"
+                                  variant="tonal" text='Adicionar' type='submit' @click="stepInput = false"></v-btn>
+                                </div>
+                                <v-card-text>
+                                  <small><b>Aviso:</b> cada step, representa uma etapa do seu processo de desenvolvimento.</small>
+                                </v-card-text>
+                              </v-sheet>
+                            </v-form>
+                            <v-sheet class="pa-4">
+                              <v-row>
+                                <ol>
+                                  <li>
+                                    <v-card-text>
+                                      <h3>Concluir steps:</h3>
+                                    </v-card-text>
+                                  </li>
+                                  <li>
+                                    <v-checkbox v-model="checkedStep" label="Levar o caramelo para passear..."></v-checkbox>
+                                  </li>
+                                </ol>
+                              </v-row>
+                            </v-sheet>
+                            <v-card-text>
+                              <small>Author: {{  object.userId  }}</small>
+                            </v-card-text>
+                          </v-sheet>
+                        </v-card>
+                      </template>
+                    </v-dialog>
                     <v-dialog max-width="600px">
                       <template v-slot:activator="{ props: activatorProps }">
                         <v-btn v-bind="activatorProps">
@@ -258,7 +309,7 @@
                   </li>
                   <v-divider></v-divider>
                   <li>
-                    <small>{{ object.userId }}</small>
+                    <small>{{ object.author }}</small>
                   </li>
                   <li>
                     <v-card-text>{{ object.description }}</v-card-text>
@@ -267,7 +318,7 @@
                     <small :style="{ color: '#000', fontWeight: 'bold' }">Em andamento 🏃🏿</small>
                   </li>
                   <li>
-                    <small>Etapas: {{ object.step }}</small>
+                    <small>Steps: {{ object.step }}</small>
                   </li>
                   <li>
                     <small>Iniciado em: {{ dayjs(object.updatedAt).format('DD/MM/YYYY HH:mm') }}</small>
@@ -451,15 +502,15 @@ import {
   PhCheckCircle,
   PhClock,
   PhEye,
-  PhEyeClosed,
   PhPause,
   PhPencil,
   PhPersonSimpleRun,
   PhPlay,
+  PhPlus,
   PhSignOut,
   PhStar,
   PhTrash,
-  PhTrophy,
+  PhTrophy
 } from '@phosphor-icons/vue'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -495,6 +546,8 @@ const priority = ref()
 const color = ref(['lightSkyBlue', 'khaki', 'lightCoral', 'lightGreen'])
 const items = ref([])
 const token = localStorage.getItem('authToken')
+const stepInput = ref(false)
+const stepText = ref('')
 
 const money = 48
 const userMoney = 0
@@ -658,6 +711,10 @@ const getUser = async () => {
     someError()
     console.log(`algo deu errado: ${err}`)
   }
+}
+
+const addStep = async() => {
+  console.log(stepText.value)
 }
 
 const nextStepTask = async (id) => {
