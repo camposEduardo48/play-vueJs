@@ -1,13 +1,8 @@
 <template>
-  <Layout
-    :style="{
-      backgroundImage: `url(${img_background})`,
-      backgroundPosition: 'center',
-    }"
-  >
+  <Layout class="layout">
     <Container>
       <v-row>
-        <v-col md="12" sm="12" class="d-flex justify-center align-center h-100 mt-10">
+        <v-col md="12" sm="12" class="d-flex justify-center align-center">
           <v-card width="400px" elevation="20">
             <v-row>
               <v-col class="d-flex justify-center">
@@ -128,7 +123,9 @@
         </v-col>
       </v-row>
     </Container>
-    <Footer></Footer>
+    <Footer>
+      <div>sopmac &copy; {{ new Date().getUTCFullYear() }}</div>
+    </Footer>
   </Layout>
 </template>
 <script setup>
@@ -140,7 +137,6 @@ import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
-import background from './../assets/bg-login.svg'
 
 const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PORT = Number(import.meta.env.VITE_PORT)
@@ -153,8 +149,6 @@ const newPassword = ref('')
 const repeatPassword = ref('')
 const agreePermissions = ref(false) // verificar a entrada desse dado no banco de dados
 const token = localStorage.getItem('authToken')
-
-const img_background = background
 
 const user_nickname = ref('')
 const user_password = ref('')
@@ -239,25 +233,38 @@ onMounted(() => {})
 </script>
 <style scoped>
 .layout[data-v-c9bfb757] {
-  height: 100%;
-  background-size: contain;
-  background-position: 0%;
+  background-size: cover;
+  background-image: url('https://getwallpapers.com/wallpaper/full/f/9/5/251950.jpg');
 }
 .v-btn.v-btn--density-default {
   position: relative;
+}
+.container {
+  height: 100%;
+  width: 100%;
 }
 ul {
   list-style: none;
 }
 .custom-style-toastify {
-  background: #874b91 !important;
+  background: #000 !important;
 }
 svg {
-  color: #874b91;
+  color: #000;
 }
 button {
   padding: 0.5rem;
   color: #fff;
-  background: #874b91 !important;
+  background: #000 !important;
+}
+footer {
+  position: relative;
+  display: flex;
+  background: transparent;
+  color: gray;
+  height: auto;
+  width: 100%;
+  bottom: 0%;
+  left: 0.5rem;
 }
 </style>

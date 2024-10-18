@@ -28,7 +28,7 @@
                       <template v-slot:activator="{ props: activatorProps }">
                         <v-btn
                           class="d-flex ga-2"
-                          :style="{ background: '#fff', color: '#874b91' }"
+                          :style="{ background: '#fff', color: '#000' }"
                           text="Editar perfil"
                           v-bind="activatorProps"
                           @click="() => {}"
@@ -36,9 +36,11 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-sheet>
-                          <v-card-text>Modal perfil</v-card-text>
-                        </v-sheet>
+                        <v-card>
+                          <v-sheet>
+                            <v-card-text>Modal perfil</v-card-text>
+                          </v-sheet>
+                        </v-card>
                       </template>
                     </v-dialog>
                   </v-sheet>
@@ -92,7 +94,7 @@
                   <template v-slot:activator="{ props: activatorProps }">
                     <v-btn
                       class="d-flex ga-2"
-                      :style="{ background: '#fff', color: '#874b91' }"
+                      :style="{ background: '#fff', color: '#000' }"
                       text="Adicionar nova tarefa "
                       v-bind="activatorProps"
                     >
@@ -122,7 +124,7 @@
                             <v-row class="d-flex justify-end">
                               <v-btn variant="plain" text="Cancelar" @click="isActive.value = false"></v-btn>
                               <v-btn
-                                :style="{ background: '#874b91', color: '#fff' }"
+                                :style="{ background: '#000', color: '#fff' }"
                                 variant="tonal"
                                 text="Confirmar"
                                 type="submit"
@@ -185,17 +187,17 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card>
+                        <v-card :style="{ background: object.cardColor }">
                           <v-sheet>
                             <v-card-text>
                               <h3>{{  object.title  }}</h3>
                             </v-card-text>
                             <v-card-text>{{ object.description }}</v-card-text>
                             <v-divider></v-divider>
-                            <v-form @submit.prevent="() => addStep()">
+                            <v-form @submit.prevent="() => postStep()">
                               <v-sheet v-if="stepInput">
                                 <v-card-actions class="d-flex justify-end">
-                                  <v-btn :style="{ background: '#874b91', color: '#fff' }"
+                                  <v-btn :style="{ background: '#000', color: '#fff' }"
                                   variant="tonal" text='Incluir steps' @click="stepInput = false"></v-btn>
                                 </v-card-actions>
                               </v-sheet>
@@ -207,7 +209,7 @@
                                   <v-text-field type="text" v-model="stepText" label="Insira um step"></v-text-field>
                                 </v-card-text>
                                 <div class="d-flex justify-end mr-3">
-                                  <v-btn :style="{ background: '#874b91', color: '#fff' }"
+                                  <v-btn :style="{ background: '#000', color: '#fff' }"
                                   variant="tonal" text='Adicionar' type='submit' @click="stepInput = false"></v-btn>
                                 </div>
                                 <v-card-text>
@@ -243,7 +245,7 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card>
+                        <v-card :style="{ background: object.cardColor }">
                           <v-card-text>
                             <h3>
                               Deseja realmente excluir a tarefa "<b>{{ object.title }}</b
@@ -332,7 +334,7 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card>
+                        <v-card :style="{ background: object.cardColor }">
                           <v-card-text>
                             <h3>{{ object.title }}</h3>
                           </v-card-text>
@@ -375,7 +377,7 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card>
+                        <v-card :style="{ background: object.cardColor }">
                           <v-card-text>
                             <h3>
                               Deseja realmente excluir a tarefa <b>"{{ object.title }}"</b>?
@@ -549,6 +551,7 @@ const token = localStorage.getItem('authToken')
 const stepInput = ref(false)
 const stepText = ref('')
 const checkedStep = ref(false)
+const stepItems = ref()
 
 const money = 48
 const userMoney = 0
@@ -558,6 +561,15 @@ const intlMoneyBrl = ref()
 // const realMoney = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(resMoney)
 const realMoney = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(resMoney)
 intlMoneyBrl.value = String(realMoney)
+
+const person = {
+  fName: 'Eduardo',
+  lName: 'Campos',
+  fullName: function () {
+    return `${this.fName} ${this.lName}, the creator`
+  }
+}
+console.log(person.fullName())
 
 const newItem = () => {
   toast.success('Adicionado com sucesso', {
@@ -611,26 +623,18 @@ const addNewObject = async () => {
       description: detail_object.value,
       priority: priority.value,
       cardColor: color.value.value,
-      step: [{
-        titleStep: stepText.value,
-        descriptionStep: '',
-        checked: checkedStep.value
-      }]
     }
     const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-    console.log(modelObject)
-    
+    })
     title.value.value = ''
     name_object.value = ''
     detail_object.value = ''
     priority.value = false
     color.value.value
     step.value = '' //verificar se está funcionando correto
-    
     newTask()
     socket.emit('new-task', response.data)
   } catch (err) {
@@ -645,7 +649,6 @@ const getObject = async () => {
         Authorization: `Bearer ${token}`,
       },
     })
-
     object_info.value = request.data
     const object_datas = object_info.value
 
@@ -717,17 +720,32 @@ const getUser = async () => {
     console.log(`algo deu errado: ${err}`)
   }
 }
-
-const addStep = async () => {
+const getStep = async () => {
   try {
-    const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, {
-      step: [stepText.value]
-      },
-      {
+    const request = await axios.get(`${DATABASE_URL}${PORT}/steps`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
+    stepItems.value = request.data
+    const stepData = stepItems.value
+    return console.log(stepData)
+  } catch (err) {
+    console.log(err)
+  }
+}
+const postStep = async () => {
+  try {
+    const response = await axios.post(`${DATABASE_URL}${PORT}/steps`, {
+        titleStep: stepText.value,
+        descriptionStep: '',
+        checked: false,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    })
+    socket.emit('new-step', response.data)
     console.log(stepText.value)
   } catch (err) {
     console.log(err)
@@ -820,8 +838,8 @@ const removeTask = async (id) => {
 }
 onMounted(() => {
   getUser()
-  getObject()
-
+  getStep()
+  getObject() 
   socket.on('connect', () => {
     console.log(`Conectado com ID: ${socket.id}`)
   })
@@ -911,33 +929,38 @@ h2 {
   font-size: 19pt;
 }
 svg {
-  color: #874b91;
+  color: #000;
+}
+footer {
+  position: fixed;
+  display: flex;
+  background: transparent;
+  color: gray;
+  height: auto;
+  width: 100%;
+  bottom: 0%;
+  left: 0.5rem;
 }
 .container {
-  background: rgb(234, 210, 238);
-  background: linear-gradient(90deg, rgba(234, 210, 238, 1) 0%, rgba(135, 75, 145, 1) 100%);
-}
-.custom-z-index {
-  word-wrap: break-word;
-  background: #fff;
-  border-radius: 4px;
+  background-size: cover;
+  background-image: url('https://getwallpapers.com/wallpaper/full/f/9/5/251950.jpg');
 }
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px; /* Largura da barra de rolagem */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* Cor de fundo da trilha da barra de rolagem */
+  background-color: silver; /* Cor de fundo da trilha da barra de rolagem */
   border-radius: 10px; /* Arredondamento dos cantos */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #ba68c8; /* Cor da barra de rolagem */
+  background-color: gray; /* Cor da barra de rolagem */
   border-radius: 10px; /* Arredondamento dos cantos */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   cursor: pointer;
-  background-color: #874b91; /* Cor ao passar o mouse */
+  background-color: #000; /* Cor ao passar o mouse */
 }
 </style>

@@ -8,7 +8,6 @@
 .container {
   display: flex;
   flex-direction: column;
-  margin-top: 1rem;
   height: auto;
   width: 100%;
   min-width: 400px;
