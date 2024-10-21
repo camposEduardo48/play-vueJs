@@ -721,6 +721,7 @@ const getUser = async () => {
   }
 }
 const getStep = async () => {
+    const stepData = stepItems.value
   try {
     const request = await axios.get(`${DATABASE_URL}${PORT}/steps`, {
       headers: {
@@ -728,7 +729,6 @@ const getStep = async () => {
       },
     })
     stepItems.value = request.data
-    const stepData = stepItems.value
     return console.log(stepData)
   } catch (err) {
     console.log(err)
@@ -745,6 +745,10 @@ const postStep = async () => {
         Authorization: `Bearer ${token}`,
       }
     })
+    if (!stepText.value) {
+  console.log('Title step is required');
+  return;
+}
     socket.emit('new-step', response.data)
     console.log(stepText.value)
   } catch (err) {
@@ -838,7 +842,6 @@ const removeTask = async (id) => {
 }
 onMounted(() => {
   getUser()
-  getStep()
   getObject() 
   socket.on('connect', () => {
     console.log(`Conectado com ID: ${socket.id}`)
