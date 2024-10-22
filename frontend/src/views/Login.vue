@@ -8,6 +8,9 @@
               <v-col class="d-flex justify-center">
                 <v-form class="d-flex flex-column h-auto w-100 ma-6 pa-2 ga-4" elevation="6" @submit.prevent="() => userLogin()">
                   <PhBiohazard :size="60" />
+                  <v-card-text>
+                    <h1>Erro está relacionado ao banco de dados MySql</h1>
+                  </v-card-text>
                   <v-text-field
                     v-model="user_nickname"
                     label="Digite seu apelido"
@@ -192,11 +195,13 @@ const newUserRegister = async () => {
   }
   try {
     registered()
-    const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser, {
+    const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser, 
+    {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    } 
+  )
     newFirstName.value = ''
     newLastName.value = ''
     newNickName.value = ''
@@ -213,6 +218,7 @@ const userLogin = async () => {
       nickname: user_nickname.value,
       password: user_password.value,
     })
+    console.log(response)
     const { token } = response.data // token desestruturado vindo do backend
     if (response) {
       notifyAccess()
