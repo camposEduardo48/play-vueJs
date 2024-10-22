@@ -77,16 +77,21 @@
               </v-card>
             </v-sheet>
             <v-row>
+              <v-col>
+                <v-btn
+                  :style="{ background: '#fff', color: '#000' }"
+                  text="Alterar branch"
+                  ></v-btn>
+              </v-col>
               <v-col class="d-flex justify-end pb-0">
                 <v-dialog max-width="550px">
-                  <template v-slot:activator="{ props: activatorProps }">
-                    <v-btn
-                      class="d-flex ga-2"
-                      :style="{ background: '#fff', color: '#000' }"
-                      text="Adicionar nova tarefa "
-                      v-bind="activatorProps"
-                    >
-                    </v-btn>
+                  <template v-slot:activator="{ props: activatorProps }">               
+                      <v-btn
+                        :style="{ background: '#fff', color: '#000' }"
+                        text="Adicionar nova tarefa "
+                        v-bind="activatorProps"
+                      >
+                      </v-btn>
                   </template>
                   <template v-slot:default="{ isActive }">
                     <v-col>
@@ -160,7 +165,7 @@
                     <small>Steps: {{ object.step }}</small>
                   </li>
                   <li>
-                    <small>Criado em: {{ dayjs(object.createdAt).format('DD/MM/YYYY HH:mm') }}</small>
+                    <small> Criado em: {{ dayjs(object.createdAt).format('DD/MM/YYYY HH:mm') }}</small>
                   </li>
                   <v-divider></v-divider>
                   <li class="d-flex justify-end ga-3">
@@ -525,7 +530,7 @@ const in_progress_task = ref([])
 const completed_task = ref([])
 const user_nickname = ref('')
 const profileImg = ref()
-const title = ref(['ZapYou', 'ZapYou 2.0', 'Sisconep', 'KENGOO'])
+const title = ref(['KENGOO App', 'ZapYou', 'ZapYou 2.0'])
 const name_object = ref('')
 const detail_object = ref('')
 const filterStatus = ref('')
@@ -935,7 +940,7 @@ footer {
   left: 0.5rem;
 }
 .container {
-  height: 100vh;
+  height: 100%;
   width: 100%;
   background-size: cover;
   background-image: url('https://getwallpapers.com/wallpaper/full/f/9/5/251950.jpg');
