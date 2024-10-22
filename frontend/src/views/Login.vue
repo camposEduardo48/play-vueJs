@@ -8,9 +8,6 @@
               <v-col class="d-flex justify-center">
                 <v-form class="d-flex flex-column h-auto w-100 ma-6 pa-2 ga-4" elevation="6" @submit.prevent="() => userLogin()">
                   <PhBiohazard :size="60" />
-                  <v-card-text>
-                    <h1>Erro está relacionado ao banco de dados MySql</h1>
-                  </v-card-text>
                   <v-text-field
                     v-model="user_nickname"
                     label="Digite seu apelido"
@@ -99,7 +96,6 @@
                                   label="Digite a mesma palavra chave novamente"
                                   required
                                 ></v-text-field>
-
                                 <v-checkbox
                                   v-model="agreePermissions"
                                   label="Você concorda com os termos e condições legais da Sopmac?"

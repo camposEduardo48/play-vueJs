@@ -14,10 +14,18 @@ const routes = [
     name: 'Dashboard',
     component: () => import('@/views/Dashboard.vue'),
     meta: {
-      title: `@ - Dashboard`,
+      title: `Dashboard - Gerenciador de tarefas`,
       // requiresAuth: true,
     },
   },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/Profile.vue'),
+    meta: {
+      title: `Perfil - Informações`
+    }
+  }
 ]
 const router = createRouter({
   history: createWebHistory(),

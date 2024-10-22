@@ -24,25 +24,13 @@
               <v-row>
                 <v-col>
                   <v-sheet class="d-flex justify-end">
-                    <v-dialog>
-                      <template v-slot:activator="{ props: activatorProps }">
                         <v-btn
                           class="d-flex ga-2"
                           :style="{ background: '#fff', color: '#000' }"
                           text="Editar perfil"
-                          v-bind="activatorProps"
-                          @click="() => {}"
+                          @click="() => toEditProfile()"
                         >
                         </v-btn>
-                      </template>
-                      <template v-slot:default="{ isActive }">
-                        <v-card>
-                          <v-sheet>
-                            <v-card-text>Modal perfil</v-card-text>
-                          </v-sheet>
-                        </v-card>
-                      </template>
-                    </v-dialog>
                   </v-sheet>
                 </v-col>
               </v-row>
@@ -621,7 +609,6 @@ const addNewObject = async () => {
       title: name_object.value,
       systemOption: title.value.value,
       description: detail_object.value,
-      priority: priority.value,
       cardColor: color.value.value,
     }
     const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject, {
@@ -629,12 +616,12 @@ const addNewObject = async () => {
           Authorization: `Bearer ${token}`,
         },
     })
+    console.log(modelObject)
     title.value.value = ''
     name_object.value = ''
     detail_object.value = ''
-    priority.value = false
     color.value.value
-    step.value = '' //verificar se está funcionando correto
+  //verificar se está funcionando correto
     newTask()
     socket.emit('new-task', response.data)
   } catch (err) {
@@ -672,6 +659,9 @@ const getObject = async () => {
     someError()
     console.log(`algo deu errado: ${err}`)
   }
+}
+const toEditProfile = () => {
+  location.href = '/profile'
 }
 const signOut = async () => {
   try {
@@ -945,18 +935,18 @@ footer {
   left: 0.5rem;
 }
 .container {
+  height: 100vh;
+  width: 100%;
   background-size: cover;
   background-image: url('https://getwallpapers.com/wallpaper/full/f/9/5/251950.jpg');
 }
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px; /* Largura da barra de rolagem */
 }
-
 .custom-scrollbar::-webkit-scrollbar-track {
   background-color: silver; /* Cor de fundo da trilha da barra de rolagem */
   border-radius: 10px; /* Arredondamento dos cantos */
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: gray; /* Cor da barra de rolagem */
   border-radius: 10px; /* Arredondamento dos cantos */
