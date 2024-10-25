@@ -99,7 +99,7 @@
                                 <v-checkbox
                                   v-model="agreePermissions"
                                   label="Você concorda com os termos e condições legais da Sopmac?"
-                                  color="#9a67a2"
+                                  color="#000"
                                   required
                                 ></v-checkbox>
                                 <v-sheet>
@@ -131,6 +131,7 @@
 import Container from '@/components/container/Container.vue'
 import Footer from '@/components/footer/Footer.vue'
 import Layout from '@/components/layout/Layout.vue'
+import { UserDatasSchema } from '@/lib/zod'
 import { PhBiohazard } from '@phosphor-icons/vue'
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
@@ -148,6 +149,7 @@ const newPassword = ref('')
 const repeatPassword = ref('')
 const agreePermissions = ref(false) // verificar a entrada desse dado no banco de dados
 const token = localStorage.getItem('authToken')
+const equalPasswords = ref(false)
 
 const user_nickname = ref('')
 const user_password = ref('')
@@ -164,7 +166,13 @@ const registered = () => {
   toast.success(`Cadastro realizado com sucesso!`, {
     autoClose: 2000,
   }) // ToastOptions
-  return { notifyAccess }
+  return { registered }
+}
+const notRegistered = () => {
+  toast.error(`Verifique e preencha os dados corretamente!`, {
+    autoClose: 2000,
+  }) // ToastOptions
+  return { notRegistered }
 }
 const invalid = () => {
   toast.error('Usuário ou senha inválidos!', {
@@ -179,7 +187,6 @@ const problem = () => {
   }) // ToastOptions
   return { problem }
 }
-
 const newUserRegister = async () => {
   const newUser = {
     firstName: newFirstName.value,
@@ -189,23 +196,33 @@ const newUserRegister = async () => {
     password: newPassword.value,
     agreePermissions: agreePermissions.value,
   }
+  equalPasswords.value = newUser.password === repeatPassword.value
+
+  const verifyPassword = equalPasswords.value
+  const { success, error } = UserDatasSchema.safeParse(newUser)
+
+  console.log(error.message)
+
   try {
-    registered()
-    const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser, 
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    } 
-  )
-    newFirstName.value = ''
-    newLastName.value = ''
-    newNickName.value = ''
-    newEmail.value = ''
-    newPassword.value = ''
-    agreePermissions.value = false
+    if (success && verifyPassword) {
+      const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      registered()
+      newFirstName.value = ''
+      newLastName.value = ''
+      newNickName.value = ''
+      newEmail.value = ''
+      newPassword.value = ''
+      repeatPassword.value = ''
+      agreePermissions.value = false
+    } else {
+      notRegistered()
+    }
   } catch (err) {
-    console.log(err)
+    console.log(`Erro no envio dos dados: ${err}`)
   }
 }
 const userLogin = async () => {
@@ -214,7 +231,6 @@ const userLogin = async () => {
       nickname: user_nickname.value,
       password: user_password.value,
     })
-    console.log(response)
     const { token } = response.data // token desestruturado vindo do backend
     if (response) {
       notifyAccess()
@@ -224,7 +240,6 @@ const userLogin = async () => {
         location.replace('/dashboard')
       }, 500)
       localStorage.setItem('authToken', token) // armazena o token do localStorage
-      return console.log(`Acesso liberado!`)
     }
   } catch (err) {
     console.log(err)
