@@ -134,7 +134,7 @@ import Layout from '@/components/layout/Layout.vue'
 import { UserDatasSchema } from '@/lib/zod'
 import { PhBiohazard } from '@phosphor-icons/vue'
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
@@ -164,7 +164,7 @@ const notifyAccess = () => {
 }
 const registered = () => {
   toast.success(`Cadastro realizado com sucesso!`, {
-    autoClose: 2000,
+    autoClose: 3200,
   }) // ToastOptions
   return { registered }
 }
@@ -197,31 +197,27 @@ const newUserRegister = async () => {
     agreePermissions: agreePermissions.value,
   }
   equalPasswords.value = newUser.password === repeatPassword.value
-
   const verifyPassword = equalPasswords.value
   const { success, error } = UserDatasSchema.safeParse(newUser)
-
-  console.log(error.message)
-
   try {
     if (success && verifyPassword) {
-      const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser)
       registered()
-      newFirstName.value = ''
-      newLastName.value = ''
-      newNickName.value = ''
-      newEmail.value = ''
-      newPassword.value = ''
-      repeatPassword.value = ''
-      agreePermissions.value = false
+      setTimeout(() => {
+        location.reload()
+      }, 1200)
     } else {
       notRegistered()
     }
+    newFirstName.value = ''
+    newLastName.value = ''
+    newNickName.value = ''
+    newEmail.value = ''
+    newPassword.value = ''
+    repeatPassword.value = ''
+    agreePermissions.value = false
   } catch (err) {
+    notRegistered()
     console.log(`Erro no envio dos dados: ${err}`)
   }
 }
@@ -246,7 +242,6 @@ const userLogin = async () => {
     invalid()
   }
 }
-onMounted(() => {})
 </script>
 <style scoped>
 .layout[data-v-c9bfb757] {
