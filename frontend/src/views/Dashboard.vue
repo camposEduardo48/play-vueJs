@@ -4,7 +4,7 @@
       <v-col md="12" sm="12">
         <v-row>
           <v-col class="d-flex flex-column ga-4 pb-10">
-            <v-card elevation="10">
+            <v-card elevation="4">
               <v-card-text>
                 <section class='d-flex align-center ga-2'>
                   <div>
@@ -26,6 +26,7 @@
                   <v-sheet class="d-flex justify-end">
                         <v-btn
                           class="d-flex ga-2"
+                          variant='plain'
                           :style="{ background: '#fff', color: '#000' }"
                           text="Editar perfil"
                           @click="() => toEditProfile()"
@@ -79,14 +80,17 @@
             <v-row>
               <v-col>
                 <v-btn
+                variant='tonal'
                   :style="{ background: '#fff', color: '#000' }"
                   text="Alterar branch"
+                  disabled
                   ></v-btn>
               </v-col>
               <v-col class="d-flex justify-end pb-0">
                 <v-dialog max-width="550px">
                   <template v-slot:activator="{ props: activatorProps }">               
                       <v-btn
+                      variant='elevated'
                         :style="{ background: '#fff', color: '#000' }"
                         text="Adicionar nova tarefa "
                         v-bind="activatorProps"
@@ -162,9 +166,6 @@
                     <small :style="{fontWeight: 'bold' }">Não iniciado 😴</small>
                   </li>
                   <li>
-                    <small>Steps: {{ object.step }}</small>
-                  </li>
-                  <li>
                     <small> Criado em: {{ dayjs(object.createdAt).format('DD/MM/YYYY HH:mm') }}</small>
                   </li>
                   <v-divider></v-divider>
@@ -205,9 +206,6 @@
                                   <v-btn :style="{ background: '#000', color: '#fff' }"
                                   variant="tonal" text='Adicionar' type='submit' @click="stepInput = false"></v-btn>
                                 </div>
-                                <v-card-text>
-                                  <small><b>Aviso:</b> cada step, representa uma etapa do seu processo de desenvolvimento.</small>
-                                </v-card-text>
                               </v-sheet>
                             </v-form>
                             <v-sheet class="pa-4">
@@ -218,12 +216,18 @@
                                       <h3>Concluir steps:</h3>
                                     </v-card-text>
                                   </li>
-                                  <li>
-                                    <v-checkbox v-model="checkedStep" label="Levar o caramelo para passear..."></v-checkbox>
+                                  <li v-for="steps in stepTitle"> 
+                                    <v-card-text>
+                                      - {{ steps }}
+                                    </v-card-text>
                                   </li>
                                 </ol>
                               </v-row>
                             </v-sheet>
+                            <v-divider></v-divider>
+                            <v-card-text>
+                              <small><b>Aviso:</b> cada step, representa uma etapa do seu processo de desenvolvimento.</small>
+                            </v-card-text>
                             <v-card-text>
                               <small>Author: {{  object.userId  }}</small>
                             </v-card-text>
@@ -313,7 +317,7 @@
                     <small :style="{ color: '#000', fontWeight: 'bold' }">Em andamento 🏃🏿</small>
                   </li>
                   <li>
-                    <small>Steps: {{ object.step }}</small>
+                    <small>Steps: {{ stepItemsQtd }}</small>
                   </li>
                   <li>
                     <small>Iniciado em: {{ dayjs(object.updatedAt).format('DD/MM/YYYY HH:mm') }}</small>
@@ -335,28 +339,23 @@
                           <v-sheet>
                             <v-card-text>{{ object.description }}</v-card-text>
                             <v-card-text>
-                              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem nam nisi, dolorum corrupti laborum
-                              rerum esse possimus molestias, nostrum necessitatibus aliquam pariatur, dolore delectus consectetur!
-                              Hic, deleniti? Corrupti, debitis pariatur.
+                              <h4>Steps á concluir:</h4>
                             </v-card-text>
                             <v-card-text>
-                              <h4>Quandtidade de steps: {{ object.step }}</h4>
+                            <form onsubmit.prevent="() => ''" v-for="steps in stepTitle" :key="stepItems.id">
+                            <v-checkbox :label="steps"></v-checkbox>
+                            </form>
                             </v-card-text>
                             <v-divider></v-divider>
-                            <v-card :style="{ boxShadow: 'none' }">
-                              <v-card-text v-for="step in object.step">
-                                <v-checkbox label="Completar tal coisa após any...."></v-checkbox>
-                              </v-card-text>
-                            </v-card>
                             <v-card-text>
-                              <small>Author: {{ object.lastName }}</small>
+                              <small>Author: {{ object.id }}</small>
                             </v-card-text>
                           </v-sheet>
                           <v-sheet>
                             <v-col>
                               <v-row class="d-flex justify-end pa-4">
                                 <v-btn variant="plain" @click="isActive.value = false">Cancelar</v-btn>
-                                <v-btn variant="tonal" @click="() => finishTask(object.id)">Confirmar</v-btn>
+                                <v-btn variant="tonal" @click="() => finishTask(object.id)" disabled>Confirmar</v-btn>
                               </v-row>
                             </v-col>
                           </v-sheet>
@@ -544,7 +543,9 @@ const token = localStorage.getItem('authToken')
 const stepInput = ref(false)
 const stepText = ref('')
 const checkedStep = ref(false)
-const stepItems = ref()
+const stepItems = ref([])
+const stepTitle = ref('')
+const stepItemsQtd = ref(0)
 
 const money = 48
 const userMoney = 0
@@ -716,15 +717,19 @@ const getUser = async () => {
   }
 }
 const getStep = async () => {
-    const stepData = stepItems.value
   try {
-    const request = await axios.get(`${DATABASE_URL}${PORT}/steps`, {
+    const request = await axios.get(`${DATABASE_URL}${PORT}/tasks`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
     stepItems.value = request.data
-    return console.log(stepData)
+    const stepData = stepItems.value
+
+    stepItemsQtd.value = stepData.length
+    stepTitle.value = stepData.map(item => item.titleStep)
+     // agora conseguimos consultar a propriedade steps também por aqui
+    console.log(stepData)
   } catch (err) {
     console.log(err)
   }
@@ -837,6 +842,7 @@ const removeTask = async (id) => {
 }
 onMounted(() => {
   getUser()
+  getStep()
   getObject() 
   socket.on('connect', () => {
     console.log(`Conectado com ID: ${socket.id}`)
@@ -943,7 +949,7 @@ footer {
   height: 100%;
   width: 100%;
   background-size: cover;
-  background-image: url('https://getwallpapers.com/wallpaper/full/f/9/5/251950.jpg');
+  background-image: url('/src/assets/background.png')
 }
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px; /* Largura da barra de rolagem */

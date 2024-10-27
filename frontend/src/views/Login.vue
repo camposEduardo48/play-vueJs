@@ -25,9 +25,6 @@
                     required
                   >
                   </v-text-field>
-                  <small v-if="user_password.length > 0 && user_password.length < 6" color="red lighten-5"
-                    >Quantidade de caracteres inválidos!</small
-                  >
                   <v-row>
                     <v-btn type="submit" class="mt-6 mb-8" block>Entrar</v-btn>
                   </v-row>
@@ -86,14 +83,16 @@
                                   variant="outlined"
                                   type="password"
                                   v-model="newPassword"
+                                  :color="newPassword.length > 5 && newPassword === repeatPassword ? 'green' : 'red'"
                                   label="Digite uma palavra chave"
                                   required
                                 ></v-text-field>
                                 <v-text-field
                                   variant="outlined"
                                   type="password"
+                                  :color="newPassword.length > 5 && newPassword === repeatPassword ? 'green' : 'red'"
                                   v-model="repeatPassword"
-                                  label="Digite a mesma palavra chave novamente"
+                                  label="Digite a palavra chave novamente"
                                   required
                                 ></v-text-field>
                                 <v-checkbox
@@ -203,19 +202,19 @@ const newUserRegister = async () => {
     if (success && verifyPassword) {
       const response = await axios.post(`${DATABASE_URL}${PORT}/users`, newUser)
       registered()
+      newFirstName.value = ''
+      newLastName.value = ''
+      newNickName.value = ''
+      newEmail.value = ''
+      newPassword.value = ''
+      repeatPassword.value = ''
+      agreePermissions.value = false
       setTimeout(() => {
         location.reload()
       }, 1200)
     } else {
       notRegistered()
     }
-    newFirstName.value = ''
-    newLastName.value = ''
-    newNickName.value = ''
-    newEmail.value = ''
-    newPassword.value = ''
-    repeatPassword.value = ''
-    agreePermissions.value = false
   } catch (err) {
     notRegistered()
     console.log(`Erro no envio dos dados: ${err}`)
@@ -246,7 +245,7 @@ const userLogin = async () => {
 <style scoped>
 .layout[data-v-c9bfb757] {
   background-size: cover;
-  background-image: url('https://getwallpapers.com/wallpaper/full/f/9/5/251950.jpg');
+  background-image: url('/src/assets/background.png');
 }
 .v-btn.v-btn--density-default {
   position: relative;
