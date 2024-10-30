@@ -1,0 +1,86 @@
+.layout[data-v-c9bfb757] {
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+}
+.v-card {
+  background: #fff;
+}
+span.status {
+  height: 10px;
+  width: 10px;
+  border-radius: 100%;
+  background: red;
+}
+img {
+  height: 65px;
+  width: 65px;
+  background-position: center;
+  background-size: contain;
+}
+.v-sheet {
+  background: transparent;
+  box-shadow: none;
+}
+.v-col {
+  color: #000;
+}
+.emoji {
+  position: relative;
+  top: 0px;
+  right: 0px;
+  font-size: 15pt;
+}
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+  list-style: none;
+  background: #fff;
+  width: 100%;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.5);
+  margin: 10px 0px 10px 0px;
+  border-radius: 6px;
+}
+h2 {
+  font-size: 19pt;
+}
+svg {
+  color: #000;
+}
+footer {
+  position: fixed;
+  display: flex;
+  background: transparent;
+  color: gray;
+  height: auto;
+  width: 100%;
+  bottom: 0%;
+  left: 0.5rem;
+}
+.container {
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-image: url('/src/assets/background.png')
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Largura da barra de rolagem */
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: silver; /* Cor de fundo da trilha da barra de rolagem */
+  border-radius: 10px; /* Arredondamento dos cantos */
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: gray; /* Cor da barra de rolagem */
+  border-radius: 10px; /* Arredondamento dos cantos */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  background-color: #000; /* Cor ao passar o mouse */
+}

@@ -4,7 +4,7 @@
       <v-col md="12" sm="12">
         <v-row>
           <v-col class="d-flex flex-column ga-4 pb-10">
-            <v-card elevation="4">
+            <v-card class="rounded-xl" elevation="4">
               <v-card-text>
                 <section class='d-flex align-center ga-2'>
                   <div>
@@ -27,7 +27,7 @@
                         <v-btn
                           class="d-flex ga-2"
                           variant='plain'
-                          :style="{ background: '#fff', color: '#000' }"
+                          :style="{ color: '#000' }"
                           text="Editar perfil"
                           @click="() => toEditProfile()"
                         >
@@ -36,11 +36,11 @@
                 </v-col>
               </v-row>
             </v-card>
-            <v-sheet class="d-flex justify-space-between ga-5">
-              <v-card class="d-flex justify-center w-33" elevation="4">
+            <v-sheet class="d-flex justify-start ga-5 bg-transparent">
+              <v-card class="d-flex justify-center rounded-xl" width="186" elevation="4">
                 <v-card-text class="d-flex flex-column align-center justify-space-between ga-2">
                   <span class="d-flex justify-space-between w-100">
-                    <h3>Congelado</h3>
+                    <h3>Não iniciado</h3>
                     <PhPause :size="32"
                   /></span>
                   <span class="d-flex justify-center align-center">
@@ -50,7 +50,7 @@
                   </span>
                 </v-card-text>
               </v-card>
-              <v-card class="d-flex justify-center w-33" elevation="4">
+              <v-card class="d-flex justify-center rounded-xl" width="186" elevation="4">
                 <v-card-text class="d-flex flex-column align-center justify-space-between ga-2">
                   <span class="d-flex justify-space-between w-100">
                     <h3>Em andamento</h3>
@@ -63,7 +63,7 @@
                   </span>
                 </v-card-text>
               </v-card>
-              <v-card class="d-flex justify-center w-33" elevation="4">
+              <v-card class="d-flex justify-center rounded-xl" width="186" elevation="4">
                 <v-card-text class="d-flex flex-column align-center justify-space-between ga-2">
                   <span class="d-flex justify-space-between w-100">
                     <h3>Finalizado</h3>
@@ -99,7 +99,7 @@
                   </template>
                   <template v-slot:default="{ isActive }">
                     <v-col>
-                      <v-card>
+                      <v-card class="rounded-lg">
                         <v-card-actions>
                           <v-spacer></v-spacer>
                           <v-btn variant="plain" text="Fechar" @click="isActive.value = false"></v-btn>
@@ -141,7 +141,7 @@
                   v-if="any_task.length > 0"
                   v-for="object in any_task"
                   :key="object.id"
-                  class="pa-4"
+                  class="pa-4 rounded-xl"
                   :style="{ background: object.cardColor }"
                 >
                   <li class="d-flex justify-space-between">
@@ -181,7 +181,7 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card :style="{ background: object.cardColor }">
+                        <v-card class="rounded-lg" :style="{ background: object.cardColor }">
                           <v-sheet>
                             <v-card-text>
                               <h3>{{  object.title  }}</h3>
@@ -216,9 +216,9 @@
                                       <h3>Concluir steps:</h3>
                                     </v-card-text>
                                   </li>
-                                  <li v-for="steps in stepTitle"> 
+                                  <li v-for="step in stepTitle"> 
                                     <v-card-text>
-                                      - {{ steps }}
+                                      - {{ step }}
                                     </v-card-text>
                                   </li>
                                 </ol>
@@ -242,7 +242,7 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card :style="{ background: object.cardColor }">
+                        <v-card class="rounded-lg" :style="{ background: object.cardColor }">
                           <v-card-text>
                             <h3>
                               Deseja realmente excluir a tarefa "<b>{{ object.title }}</b
@@ -277,7 +277,7 @@
                     </v-btn>
                   </li>
                 </ul>
-                <ul v-else class="pa-4">
+                <ul v-else class="pa-4 rounded-xl">
                   <li>
                     <div class="d-flex justify-center">
                       <p>{{ 'Nenhuma tarefa nova' }}</p>
@@ -290,7 +290,7 @@
                   v-if="in_progress_task.length > 0"
                   v-for="object in in_progress_task"
                   :key="object.id"
-                  class="pa-4"
+                  class="pa-4 rounded-xl"
                   :style="{ background: object.cardColor }"
                 >
                   <li class="d-flex justify-space-between">
@@ -331,7 +331,7 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card :style="{ background: object.cardColor }">
+                        <v-card class="rounded-lg" :style="{ background: object.cardColor }">
                           <v-card-text>
                             <h3>{{ object.title }}</h3>
                           </v-card-text>
@@ -342,7 +342,7 @@
                               <h4>Steps á concluir:</h4>
                             </v-card-text>
                             <v-card-text>
-                            <form onsubmit.prevent="() => ''" v-for="steps in stepTitle" :key="stepItems.id">
+                            <form onsubmit.prevent="() => ''" v-for="steps in stepItems" :key="stepItems.id">
                             <v-checkbox :label="steps"></v-checkbox>
                             </form>
                             </v-card-text>
@@ -369,7 +369,7 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card :style="{ background: object.cardColor }">
+                        <v-card class="rounded-lg" :style="{ background: object.cardColor }">
                           <v-card-text>
                             <h3>
                               Deseja realmente excluir a tarefa <b>"{{ object.title }}"</b>?
@@ -407,7 +407,7 @@
                     <!-- só podera finalizar a task após completar todos os steps -->
                   </li>
                 </ul>
-                <ul v-else class="pa-4">
+                <ul v-else class="pa-4 rounded-xl">
                   <li>
                     <div class="d-flex justify-center">
                       <p>{{ 'Nenhuma tarefa em progresso' }}</p>
@@ -420,7 +420,7 @@
                   v-if="completed_task.length > 0"
                   v-for="object in completed_task"
                   :key="object.id"
-                  class="pa-4"
+                  class="pa-4 rounded-xl"
                   :style="{ background: object.cardColor }"
                 >
                   <li class="d-flex justify-space-between">
@@ -462,7 +462,7 @@
                     </v-btn>
                   </li>
                 </ul>
-                <ul v-else class="pa-4">
+                <ul v-else class="pa-4 rounded-xl">
                   <li>
                     <div class="d-flex justify-center">
                       <p>{{ 'Nenhuma tarefa completada' }}</p>
@@ -489,7 +489,9 @@
   </Footer>
 </template>
 <script setup>
+import '@/style/dashboard.css'
 import Footer from '@/components/footer/Footer.vue'
+import { deleteSuccess, invalid, newTask, someError, startTask, taskFinished } from '@/components/notifications/Notifications'
 import {
   PhCheckCircle,
   PhClock,
@@ -510,8 +512,6 @@ import 'dayjs/locale/pt-br'
 import { jwtDecode } from 'jwt-decode'
 import { io } from 'socket.io-client'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { toast } from 'vue3-toastify'
-import 'vue3-toastify/dist/index.css'
 
 dayjs.locale('pt-br')
 
@@ -541,8 +541,9 @@ const token = localStorage.getItem('authToken')
 const stepInput = ref(false)
 const stepText = ref('')
 const checkedStep = ref(false)
+
 const stepItems = ref([])
-const stepTitle = ref('')
+const stepTitle = ref([])
 const stepItemsQtd = ref(0)
 
 const money = 48
@@ -562,50 +563,6 @@ const person = {
   }
 }
 console.log(person.fullName())
-
-const newItem = () => {
-  toast.success('Adicionado com sucesso', {
-    autoClose: 2500,
-  }) // ToastOptions
-  return { newItem }
-}
-const taskFinished = () => {
-  toast.success('Tarefa finalizada ✅', {
-    autoClose: 2500,
-  }) // ToastOptions
-  return { taskFinished }
-}
-const newTask = () => {
-  toast.success('Nova tarefa adicionada', {
-    autoClose: 3000,
-  }) // ToastOptions
-  return { newTask }
-}
-const startTask = (title) => {
-  toast.success(`Tarefa "${title}" iniciada`, {
-    autoClose: 3000,
-  }) // ToastOptions
-  return { startTask }
-}
-const deleteSuccess = () => {
-  toast.success('Tarefa removida com sucesso', {
-    autoClose: 1500,
-    isLoading: false,
-  })
-  return { deleteSuccess }
-}
-const invalid = () => {
-  toast.error('Informação inválida', {
-    autoClose: 2000,
-  }) // ToastOptions
-  return { invalid }
-}
-const someError = () => {
-  toast.error('Ops, algo deu errado!', {
-    autoClose: 3000,
-  }) // ToastOptions
-  return { someError }
-}
 
 const addNewObject = async () => {
   /**
@@ -629,12 +586,11 @@ const addNewObject = async () => {
           Authorization: `Bearer ${token}`,
         },
     })
-
-    title.value.value = ''
     name_object.value = ''
+    title.value.value = ''
     detail_object.value = ''
-    color.value.value
-  //verificar se está funcionando correto
+    color.value.value = ''
+  
     newTask()
     socket.emit('new-task', response.data)
   } catch (err) {
@@ -651,7 +607,11 @@ const getObject = async () => {
     })
     object_info.value = request.data
     const object_datas = object_info.value
-    console.log(object_datas)
+    
+    stepTitle.value = object_info.value
+    const step = stepTitle.value.map(item => item.step)
+    console.log(step)
+
     filterStatus.value = object_datas
     const seeStatus = filterStatus.value
 
@@ -723,46 +683,6 @@ const getUser = async () => {
     console.log(`algo deu errado: ${err}`)
   }
 }
-const getStep = async () => {
-  try {
-    const request = await axios.get(`${DATABASE_URL}${PORT}/tasks`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    stepItems.value = request.data
-    const stepData = stepItems.value
-
-    stepItemsQtd.value = stepData.length
-    stepTitle.value = stepData.map(item => item.titleStep)
-     // agora conseguimos consultar a propriedade steps também por aqui
-    console.log(stepData)
-  } catch (err) {
-    console.log(err)
-  }
-}
-const postStep = async () => {
-  try {
-    const response = await axios.post(`${DATABASE_URL}${PORT}/steps`, {
-        titleStep: stepText.value,
-        descriptionStep: '',
-        checked: false,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    })
-    if (!stepText.value) {
-  console.log('Title step is required');
-  return;
-}
-    socket.emit('new-step', response.data)
-    console.log(stepText.value)
-  } catch (err) {
-    console.log(err)
-  }
-}
-
 const nextStepTask = async (id) => {
   // só concluir a task appós finalizar todos os steps de cada task
   try {
@@ -849,7 +769,6 @@ const removeTask = async (id) => {
 }
 onMounted(() => {
   getUser()
-  getStep()
   getObject() 
   socket.on('connect', () => {
     console.log(`Conectado com ID: ${socket.id}`)
@@ -893,85 +812,4 @@ onBeforeUnmount(() => {
   console.log(`Socket desconectado => ${socket.id}`)
 })
 </script>
-<style scoped>
-.layout[data-v-c9bfb757] {
-  height: 100%;
-  background-size: contain;
-  background-position: 0%;
-}
-span.status {
-  height: 10px;
-  width: 10px;
-  border-radius: 100%;
-  background: silver;
-}
-img {
-  height: 65px;
-  width: 65px;
-  background-position: center;
-  background-size: contain;
-}
-.v-sheet {
-  background: transparent;
-  box-shadow: none;
-}
-.v-col {
-  color: #000;
-}
-.emoji {
-  position: relative;
-  top: 0px;
-  right: 0px;
-  font-size: 15pt;
-}
-ul {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  justify-content: center;
-  list-style: none;
-  background: #fff;
-  width: 100%;
-  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.5);
-  margin: 10px 0px 10px 0px;
-  border-radius: 6px;
-}
-h2 {
-  font-size: 19pt;
-}
-svg {
-  color: #000;
-}
-footer {
-  position: fixed;
-  display: flex;
-  background: transparent;
-  color: gray;
-  height: auto;
-  width: 100%;
-  bottom: 0%;
-  left: 0.5rem;
-}
-.container {
-  height: 100%;
-  width: 100%;
-  background-size: cover;
-  background-image: url('/src/assets/background.png')
-}
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px; /* Largura da barra de rolagem */
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background-color: silver; /* Cor de fundo da trilha da barra de rolagem */
-  border-radius: 10px; /* Arredondamento dos cantos */
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: gray; /* Cor da barra de rolagem */
-  border-radius: 10px; /* Arredondamento dos cantos */
-}
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  cursor: pointer;
-  background-color: #000; /* Cor ao passar o mouse */
-}
-</style>
