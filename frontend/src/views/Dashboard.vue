@@ -610,19 +610,28 @@ const someError = () => {
 }
 
 const addNewObject = async () => {
-  try {
-    const modelObject = {
-      title: name_object.value,
-      systemOption: title.value.value,
-      description: detail_object.value,
-      cardColor: color.value.value,
+  /**
+   * let colors = {
+      Amarelo: 'khaki',
+      Azul: 'lightBlueSky',
+      Vermelho: 'lightCoral',
+      Verde: 'lightGreen'
     }
-    const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject, {
+   */
+  const modelObject = {
+    title: name_object.value,
+    systemOption: title.value.value,
+    description: detail_object.value,
+    cardColor: color.value.value
+  }
+    try {
+    const response = await axios.post(`${DATABASE_URL}${PORT}/tasks`, modelObject,
+    {
         headers: {
           Authorization: `Bearer ${token}`,
         },
     })
-    console.log(modelObject)
+
     title.value.value = ''
     name_object.value = ''
     detail_object.value = ''
@@ -644,7 +653,7 @@ const getObject = async () => {
     })
     object_info.value = request.data
     const object_datas = object_info.value
-
+    console.log(object_datas)
     filterStatus.value = object_datas
     const seeStatus = filterStatus.value
 
