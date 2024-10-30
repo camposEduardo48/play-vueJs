@@ -355,7 +355,7 @@
                             <v-col>
                               <v-row class="d-flex justify-end pa-4">
                                 <v-btn variant="plain" @click="isActive.value = false">Cancelar</v-btn>
-                                <v-btn variant="tonal" @click="() => finishTask(object.id)" disabled>Confirmar</v-btn>
+                                <v-btn variant="tonal" @click="() => finishTask(object.id)">Confirmar</v-btn>
                               </v-row>
                             </v-col>
                           </v-sheet>
@@ -399,14 +399,12 @@
                       <PhPencil :size="22" />
                     </v-btn>
                     <v-btn v-if="object.priority === false" @click="() => setFavorite(object.id)">
-                      <!-- criar logica para favoritar task -->
                       <PhStar :size="22" />
                     </v-btn>
                     <v-btn v-if="object.priority === true" @click="() => ''" disabled>
-                      <!-- criar logica para favoritar task -->
                       <PhStar :size="22" />
                     </v-btn>
-                    <!-- só podera finalizar a task após completar todas as tasks -->
+                    <!-- só podera finalizar a task após completar todos os steps -->
                   </li>
                 </ul>
                 <ul v-else class="pa-4">
