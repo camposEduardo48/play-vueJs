@@ -32,6 +32,10 @@
                           @click="() => toEditProfile()"
                         >
                         </v-btn>
+                        <v-btn 
+                        variant="tonal"
+                        text="CLIQUE E VEJA OQUE ACONTECE"
+                        @click="() => toPdf()"></v-btn>
                   </v-sheet>
                 </v-col>
               </v-row>
@@ -136,7 +140,7 @@
               </v-col>
             </v-row>
             <v-row class="d-flex justify-space-between mt-0">
-              <v-col class="d-flex flex-column h-auto">
+              <v-col id="printTheData" class="d-flex flex-column h-auto">
                 <ul
                   v-if="any_task.length > 0"
                   v-for="object in any_task"
@@ -511,11 +515,44 @@ import {
 import axios from 'axios'
 import dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
+import html2PDF from 'html2canvas'
+import jsPDF from 'jspdf'
 import { jwtDecode } from 'jwt-decode'
 import { io } from 'socket.io-client'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
+const toPdf = async () => {
+  const idComponent = document.getElementById('printTheData')
+  const canvas = await html2PDF(idComponent)
+  const imgData = canvas.toDataURL('image/png')
+
+  const pdf = new jsPDF({
+  //orientation: 'portrait',
+  unit: 'pt',
+  format: 'a4',
+  })
+
+  const imgWidth = 395.28 // definindo tamaanho de altura
+  const pageHeight = 800.00 // definindo tamanho de largura
+  const imgHeight = (canvas.height * imgWidth) / canvas.width
+  let heightLeft = imgHeight
+  let position = 0
+    // Adiciona a imagem ao PDF e cria novas páginas, se necessário
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+  heightLeft -= pageHeight
+
+  while (heightLeft >= 0) {
+          position = heightLeft - imgHeight
+          pdf.addPage()
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+          heightLeft -= pageHeight
+        }
+
+  pdf.save('testejspdf.pdf')
+}
+
 dayjs.locale('pt-br')
+
 
 const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PORT = Number(import.meta.env.VITE_PORT)
@@ -609,6 +646,11 @@ const getObject = async () => {
     })
     object_info.value = request.data
     const object_datas = object_info.value
+    const toPdf = JSON.stringify(object_datas)
+
+    
+    // pdf.save('tasks.pdf')
+    console.log(object_datas)
 
     const getTitleStep = request.data
     
