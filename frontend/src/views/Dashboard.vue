@@ -216,7 +216,7 @@
                                       <h3>Concluir steps:</h3>
                                     </v-card-text>
                                   </li>
-                                  <li v-for="step in stepTitle"> 
+                                  <li v-for="step in stepTitle" :key="object.id"> 
                                     <v-card-text>
                                       - {{ step }}
                                     </v-card-text>
@@ -317,7 +317,7 @@
                     <small :style="{ color: '#000', fontWeight: 'bold' }">Em andamento 🏃🏿</small>
                   </li>
                   <li>
-                    <small>Steps: {{ stepItemsQtd }}</small>
+                    <small>Steps: {{ object.step.length }}</small>
                   </li>
                   <li>
                     <small>Iniciado em: {{ dayjs(object.updatedAt).format('DD/MM/YYYY HH:mm') }}</small>
@@ -342,8 +342,10 @@
                               <h4>Steps á concluir:</h4>
                             </v-card-text>
                             <v-card-text>
-                            <form onsubmit.prevent="() => ''" v-for="steps in stepItems" :key="stepItems.id">
-                            <v-checkbox :label="steps"></v-checkbox>
+                            <form onsubmit.prevent="() => ''" v-for="step in stepTitle" :key="object.id">
+                            <v-card-text>
+                              <v-checkbox :label="step"></v-checkbox>
+                            </v-card-text>
                             </form>
                             </v-card-text>
                             <v-divider></v-divider>
@@ -440,7 +442,7 @@
                       <small>{{ object.author }}</small>
                     </li>
                     <li>
-                      <small>Etapas: {{ object.step }}</small>
+                      <small>Etapas: {{ object.step.length }}</small>
                     </li>
                     <li>
                       <v-card-text>{{ object.description }}</v-card-text>
@@ -607,10 +609,24 @@ const getObject = async () => {
     })
     object_info.value = request.data
     const object_datas = object_info.value
+
+    const getTitleStep = request.data
     
-    stepTitle.value = object_info.value
-    const step = stepTitle.value.map(item => item.step)
-    console.log(step)
+    let titles = []
+    const title = getTitleStep.forEach((item) => {
+      if (item) {
+        item.step.forEach((item2) => {
+          titles.push(item2.titleStep)
+        })
+      }
+    })
+    stepTitle.value = titles
+    // stepTitle.value = getTitleStep.filter(item => item.step)
+  
+    console.log(titles)
+
+    // ASSOCIAR CADA STEP À SEU RESPECTIVO TASK PAI
+    console.log(getTitleStep)
 
     filterStatus.value = object_datas
     const seeStatus = filterStatus.value
