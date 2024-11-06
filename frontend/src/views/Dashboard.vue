@@ -523,17 +523,22 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const toPdf = async () => {
   const idComponent = document.getElementById('printTheData')
-  const canvas = await html2PDF(idComponent)
+  const canvas = await html2PDF(idComponent, {
+    // define o nivel de qualidade de cada print
+    scale: 3,
+		// useCORS => carregar arquivos de imagem e etc
+		useCORS: true,
+  })
   const imgData = canvas.toDataURL('image/png')
 
   const pdf = new jsPDF({
-  //orientation: 'portrait',
-  unit: 'pt',
+  orientation: 'portrait',
+  unit: 'pt', // verificar
   format: 'a4',
   })
 
   const imgWidth = 395.28 // definindo tamaanho de altura
-  const pageHeight = 800.00 // definindo tamanho de largura
+  const pageHeight = 820.00 // definindo tamanho de largura
   const imgHeight = (canvas.height * imgWidth) / canvas.width
   let heightLeft = imgHeight
   let position = 0
@@ -558,7 +563,6 @@ const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PORT = Number(import.meta.env.VITE_PORT)
 const socket = io(`${DATABASE_URL}${PORT}`)
 const status_test = ref(true)
-const step = ref([1, 2, 3, 4, 5])
 const user_info = ref('')
 const object_info = ref([])
 const any_task = ref([])
