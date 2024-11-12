@@ -18,3 +18,20 @@
 
 // type newUserDatasSchemaType = z.infer<typeof newUserDatasSchema>
 // UserSchema.safeParse()
+
+export interface TaskData {
+	id: string
+	title: string
+	status?: string
+	systemOption: string
+	description: string
+	cardColor: string
+	priority: boolean
+	createdAt?: string
+}
+export interface StepData extends TaskData {
+	id: string
+	titleStep: string
+	descriptionStep: string
+	checked: boolean
+}

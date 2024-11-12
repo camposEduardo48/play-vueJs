@@ -185,14 +185,14 @@
                         </v-btn>
                       </template>
                       <template v-slot:default="{ isActive }">
-                        <v-card class="rounded-lg" :style="{ background: object.cardColor }">
+                        <v-card class="rounded-lg" :style="{ background: object.cardColor}">
                           <v-sheet>
                             <v-card-text>
                               <h3>{{  object.title  }}</h3>
                             </v-card-text>
                             <v-card-text>{{ object.description }}</v-card-text>
                             <v-divider></v-divider>
-                            <v-form @submit.prevent="() => postStep()">
+                            <v-form @submit.prevent="() => postTaskSteps()">
                               <v-sheet v-if="stepInput">
                                 <v-card-actions class="d-flex justify-end">
                                   <v-btn :style="{ background: '#000', color: '#fff' }"
@@ -205,6 +205,7 @@
                                 </div>
                                 <v-card-text>
                                   <v-text-field type="text" v-model="stepText" label="Insira um step"></v-text-field>
+                                  <small>{{ stepText.value }}</small>
                                 </v-card-text>
                                 <div class="d-flex justify-end mr-3">
                                   <v-btn :style="{ background: '#000', color: '#fff' }"
@@ -547,17 +548,15 @@ const toPdf = async () => {
   heightLeft -= pageHeight
 
   while (heightLeft >= 0) {
-          position = heightLeft - imgHeight
-          pdf.addPage()
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
-          heightLeft -= pageHeight
-        }
-
+    position = heightLeft - imgHeight
+    pdf.addPage()
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+    heightLeft -= pageHeight
+  }
   pdf.save('testejspdf.pdf')
 }
 
 dayjs.locale('pt-br')
-
 
 const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
 const PORT = Number(import.meta.env.VITE_PORT)
@@ -706,6 +705,31 @@ const signOut = async () => {
     console.log(err)
   }
 }
+
+const postTaskSteps = async () => {
+  const steps = {
+    titleStep: stepText.value,
+    //descriptionStep: 
+  }
+  try {
+    const response = await axios.post(`${DATABASE_URL}${PORT}/steps`,
+      { steps },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}` // Se precisar de autenticação
+        }
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Erro ao criar steps:', error.response?.data);
+      throw new Error(error.response?.data?.message || 'Erro ao criar steps');
+    }
+    throw error;
+  }
+};
+
 const verifyToken = (token) => {
   try {
     const decoded = jwtDecode(token)
