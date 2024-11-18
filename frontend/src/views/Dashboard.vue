@@ -496,9 +496,9 @@
   </Footer>
 </template>
 <script setup>
-import '@/style/dashboard.css'
 import Footer from '@/components/footer/Footer.vue'
-import { deleteSuccess, invalid, newTask, someError, startTask, taskFinished } from '@/components/notifications/Notifications'
+import { deleteSuccess, newTask, someError, startTask, taskFinished } from '@/components/notifications/Notifications'
+import '@/style/dashboard.css'
 import {
   PhCheckCircle,
   PhClock,
